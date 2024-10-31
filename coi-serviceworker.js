@@ -17,6 +17,8 @@ if (typeof window === 'undefined') {
                 });
         } else if (ev.data.type === "coepCredentialless") {
             coepCredentialless = ev.data.value;
+        } else if (ev.data.type === 'SKIP_WAITING') {
+            self.skipWaiting();
         }
     });
 
