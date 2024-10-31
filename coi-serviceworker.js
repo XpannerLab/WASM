@@ -1,7 +1,9 @@
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
     self.addEventListener("install", () => self.skipWaiting());
-    self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+    self.addEventListener("activate", (event) => {
+        event.waitUntil(self.clients.claim());
+    });
 
     self.addEventListener("message", (ev) => {
         if (!ev.data) {
@@ -103,7 +105,7 @@ if (typeof window === 'undefined') {
                 n.serviceWorker.controller.postMessage({ type: "deregister" });
             }
         }
-
+ 
         if (window.crossOriginIsolated !== false || !coi.shouldRegister()) return;
 
         if (!window.isSecureContext) {
