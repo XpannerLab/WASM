@@ -143,6 +143,26 @@
          navigator.serviceWorker.register('./coi-serviceworker.js')
             .then((registration) => {
                console.log('Service Worker registered with scope:', registration.scope);
+               if (registration.waiting) {
+                  registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+               }
+               if (registration.installing) {
+                  registration.installing.addEventListener('statechange', function () {
+                     if (this.state === 'installed') {
+                        this.postMessage({ type: 'SKIP_WAITING' });
+                     }
+                  });
+               }
+               registration.addEventListener('updatefound', () => {
+                  const newWorker = registration.installing;
+                  if (newWorker) {
+                     newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed') {
+                           newWorker.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                     });
+                  }
+               });
             })
             .catch((error) => {
                console.error('Service Worker registration failed:', error);
