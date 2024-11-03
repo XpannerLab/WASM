@@ -8631,6 +8631,13 @@ function get_window_size(width,height) { var w = window.innerWidth; var h = wind
     };
   
   /** @suppress {duplicate } */
+  var _glUniform1f = (location, v0) => {
+      GLctx.uniform1f(webglGetUniformLocation(location), v0);
+    };
+  var _emscripten_glUniform1f = _glUniform1f;
+
+  
+  /** @suppress {duplicate } */
   var _glUniform1fv = (location, count, value) => {
   
       count && GLctx.uniform1fv(webglGetUniformLocation(location), HEAPF32, ((value)>>2), count);
@@ -10155,6 +10162,8 @@ function assignWasmImports() {
     /** @export */
     emscripten_glTexParameteri: _emscripten_glTexParameteri,
     /** @export */
+    emscripten_glUniform1f: _emscripten_glUniform1f,
+    /** @export */
     emscripten_glUniform1fv: _emscripten_glUniform1fv,
     /** @export */
     emscripten_glUniform1i: _emscripten_glUniform1i,
@@ -10314,6 +10323,7 @@ var dynCall_vffff = Module['dynCall_vffff'] = createExportWrapper('dynCall_vffff
 var dynCall_vff = Module['dynCall_vff'] = createExportWrapper('dynCall_vff', 3);
 var dynCall_viiiiiii = Module['dynCall_viiiiiii'] = createExportWrapper('dynCall_viiiiiii', 8);
 var dynCall_viiiiiiiii = Module['dynCall_viiiiiiiii'] = createExportWrapper('dynCall_viiiiiiiii', 10);
+var dynCall_vif = Module['dynCall_vif'] = createExportWrapper('dynCall_vif', 3);
 var dynCall_viiiiii = Module['dynCall_viiiiii'] = createExportWrapper('dynCall_viiiiii', 7);
 var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
 var dynCall_iidiiii = Module['dynCall_iidiiii'] = createExportWrapper('dynCall_iidiiii', 7);
