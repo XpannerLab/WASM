@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Solar Panel Project</title>
+    <style>body {
+  font-family: arial;
+  margin: 0;
+  padding: none;
+}
+
+.emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+div.emscripten { text-align: center; }
+div.emscripten_border { border: 1px solid black; }
+/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+canvas.emscripten { border: 0px none; background-color: black; }
+
+/*
+#company_logo {
+   display: inline-block;
+   margin: 0;
+   padding: 6px;
+   width: 265px;
+}
+
+.spinner {
+  height: 30px;
+  width: 30px;
+  margin: 0;
+  margin-top: 20px;
+  margin-left: 20px;
+  display: inline-block;
+  vertical-align: top;
+
+  -webkit-animation: rotation .8s linear infinite;
+  -moz-animation: rotation .8s linear infinite;
+  -o-animation: rotation .8s linear infinite;
+  animation: rotation 0.8s linear infinite;
+
+  border-left: 5px solid rgb(235, 235, 235);
+  border-right: 5px solid rgb(235, 235, 235);
+  border-bottom: 5px solid rgb(235, 235, 235);
+  border-top: 5px solid rgb(120, 120, 120);
+
+  border-radius: 100%;
+  background-color: rgb(189, 215, 46);
+}
+
+@-webkit-keyframes rotation {
+  from {-webkit-transform: rotate(0deg);}
+  to {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes rotation {
+  from {-moz-transform: rotate(0deg);}
+  to {-moz-transform: rotate(360deg);}
+}
+@-o-keyframes rotation {
+  from {-o-transform: rotate(0deg);}
+  to {-o-transform: rotate(360deg);}
+}
+@keyframes rotation {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+*/
+
+#status {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 30px;
+  margin-left: 20px;
+  font-weight: bold;
+  color: rgb(120, 120, 120);
+}
+
+#progress {
+  height: 20px;
+  width: 300px;
+}
+
+/*
+#controls {
+  display: inline-block;
+  float: right;
+  vertical-align: top;
+  margin-top: 30px;
+  margin-right: 20px;
+}
+*/
+
+#output {
+  width: 100%;
+  height: 200px;
+  margin: 0 auto;
+  margin-top: 10px;
+  border-left: 0px;
+  border-right: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  display: block;
+  background-color: black;
+  color: white;
+  font-family: 'Lucida Console', Monaco, monospace;
+  outline: none;
+}
+</style>
+
+  </head>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <body>
+    <!-- <a href="http://emscripten.org"><img id="company_logo" src="logo.png"></a>-->
+
+     <div class="spinner" id='spinner'></div>
+     <div class="emscripten" id="status">Downloading...</div>
+
+     <!--<span id='controls'>
+        <span><input type="checkbox" id="resize">Resize canvas</span>
+        <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
+        <span>
+           <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked,
+                                                                                document.getElementById('resize').checked)">
+        </span>
+     </span>-->
+
+     <div class="emscripten">
+        <progress value="0" max="100" id="progress" hidden=1></progress>
+     </div>
+
+     <div class="emscripten_border" style="position: relative; display: inline-block;">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+        <!--Button overlay-->
+        <!--<button id="overlayButton"
+     style="position: absolute; bottom: 0; left: 0; z-index: 10;"> Click Me
+   </button>-->
+        <button id="overlayButton_origin"
+                style="position: absolute; bottom: 2.5%; left: 50%; transform: translateX(-50%);
+               /*z-index: 10; background-color: rgba(255, 0, 0, 0.25); border: none; color: white;*/
+               z-index: 10; background-color: rgba(255, 0, 0, 0.5); border: 2px solid black; color: white;
+               width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+           Origin
+        </button>
+
+        <!-- Overlay Slider + Text -->
+        <!--<div id="slider_boom"
+        style="position: absolute; top: 10px; left: 10px; transform: none;
+         z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
+      <span id="overlayText_0">Boom Angle</span>
+      <input type="range" id="overlaySlider" min="0" max="100" value="0"
+             style="width: 100px; cursor: pointer;">
+      <span id="overlayText">50</span>
+   </div>
+   <div id="slider_boom_stick"
+        style="position: absolute; top: 30px; left: 10px; transform: none;
+         z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
+      <span id="overlayText_0">Stick Angle</span>
+      <input type="range" id="overlaySlider" min="0" max="100" value="0"
+             style="width: 100px; cursor: pointer;">
+      <span id="overlayText">50</span>
+   </div>-->
+
+        <div id="controls_wrapper"
+             style="position: absolute; top: 10px; left: 10px; z-index: 10;
+            display: flex; flex-direction: column; gap: 12px;">
+
+           <div id="slider_panel_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Panel Count</span>
+              <input type="range" id="overlaySlider_panel_count" min="0" max="50" value="0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_panel_count" style="min-width: 30px;">0</span>
+           </div>
+
+           <div id="slider_panel_height" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Panel Height</span>
+              <input type="range" id="overlaySlider_panel_height" min="1.0" max="2.0" step="0.1" value="1.5" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_panel_height" style="min-width: 30px;">1.5 m</span>
+           </div>
+
+           <div id="slider_panel_space" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Panel Space</span>
+              <input type="range" id="overlaySlider_panel_space" min="3.0" max="5.0" step="0.1" value="3.0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_panel_space" style="min-width: 30px;">3.0 m</span>
+           </div>
+
+           <div id="slider_base" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Move</span>
+              <input type="range" id="overlaySlider_base" min="-20.0" max="20.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_base" style="min-width: 30px;">0.0 m</span>
+           </div>
+
+           <div id="slider_lift" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Lift</span>
+              <input type="range" id="overlaySlider_lift" min="-15" max="15" value="0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_lift" style="min-width: 30px;">0°</span>
+           </div>
+
+           <div id="slider_cabin" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Cabin</span>
+              <input type="range" id="overlaySlider_cabin" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_cabin" style="min-width: 30px;">0°</span>
+           </div>
+
+           <div id="slider_boom" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Boom</span>
+              <input type="range" id="overlaySlider_boom" min="-80" max="45" value="-45" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_boom" style="min-width: 30px;">-45°</span>
+           </div>
+
+           <div id="slider_stick" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Stick</span>
+              <input type="range" id="overlaySlider_stick" min="25" max="165" value="120" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_stick" style="min-width: 30px;">120°</span>
+           </div>
+
+           <div id="slider_bucket" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Bucket</span>
+              <input type="range" id="overlaySlider_bucket" min="-45" max="135" value="24" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_bucket" style="min-width: 30px;">60°</span>
+           </div>
+
+           <div id="slider_tilt" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Tilt</span>
+              <input type="range" id="overlaySlider_tilt" min="-35" max="35" value="0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_tilt" style="min-width: 30px;">0°</span>
+           </div>
+
+           <div id="slider_rotate" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Rotate</span>
+              <input type="range" id="overlaySlider_rotate" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_rotate" style="min-width: 30px;">0°</span>
+           </div>
+
+           <div id="slider_camera_target_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">ViewTargetZ</span>
+              <input type="range" id="overlaySlider_camera_target_z" min="-5.0" max="5.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_camera_target_z" style="min-width: 30px;">0 m</span>
+           </div>
+
+           <!--Checkbox-->
+           <label>
+              <input type="checkbox" id="overlayCheckbox_tiltrotator" checked>
+              Tiltrotator
+           </label>
+
+           <label>
+              <input type="checkbox" id="overlayCheckbox_grab">
+              Grab Panel
+           </label>
+
+           <label>
+              <input type="checkbox" id="overlayCheckbox_output">
+              Output
+           </label>
+
+           <div id="slider_norm_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">n_threshold</span>
+              <input type="range" id="overlaySlider_norm_threshold" min="0.0" max="2.0" step="0.01" value="0.25" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_norm_threshold" style="min-width: 30px;">0.25</span>
+           </div>
+           <div id="slider_z_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">z_threshold</span>
+              <input type="range" id="overlaySlider_z_threshold" min="0.0" max="3.0" step="0.01" value="0.20" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_z_threshold" style="min-width: 30px;">0.20</span>
+           </div>
+           <div id="slider_z_norm_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">z_n_th</span>
+              <input type="range" id="overlaySlider_z_norm_threshold" min="0.0" max="2.0" step="0.01" value="0.30" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_z_norm_threshold" style="min-width: 30px;">0.30</span>
+           </div>
+           <div id="slider_z_norm_threshold_scale" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">z_n_th_scl</span>
+              <input type="range" id="overlaySlider_z_norm_threshold_scale" min="0.0" max="50.0" step="1.0" value="12" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_z_norm_threshold_scale" style="min-width: 30px;">12</span>
+           </div>
+           <div id="slider_outline_w" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">outline</span>
+              <input type="range" id="overlaySlider_outline_w" min="1" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_outline_w" style="min-width: 30px;">2</span>
+           </div>
+
+        </div>
+
+        <!--<div id="listBoxContainer"
+        style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+       z-index: 10; color: white; font-weight: bold;">
+      <label for="overlayList" style="margin-right: 10px;">Mode:</label>
+      <select id="overlayList" size="3"
+              style="background-color: rgba(255,0,0,0.5); color: white; border: 2px solid black; cursor: pointer;">
+         <option value="day">Day</option>
+         <option value="night">Night</option>
+         <option value="custom">Custom</option>
+      </select>
+   </div>-->
+
+        <div style="position: absolute; top: 5%; right: 20px; z-index: 10;
+            background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px;
+            display: grid;
+            grid-template-columns: 1fr auto; /* Text takes space, picker is auto-sized */
+            align-items: center;
+            column-gap: 10px; row-gap: 5px;
+            color: green; font-weight: bold; font-family: sans-serif;">
+
+           <label for="idColorExcavator" style="text-align: left;">Excavator</label>
+           <input type="color" id="idColorExcavator" value="#ffffff">
+
+           <label for="idColorPanel" style="text-align: left;">Panel</label>
+           <input type="color" id="idColorPanel" value="#ffffff">
+
+           <label for="idColorPile" style="text-align: left;">Pile</label>
+           <input type="color" id="idColorPile" value="#ffffff">
+
+           <label for="idColorOutline" style="text-align: left;">Outline</label>
+           <input type="color" id="idColorOutline" value="#000000">
+
+           <label for="idColorBG" style="text-align: left;">Background</label>
+           <input type="color" id="idColorBG" value="#ffffff">
+        </div>
+
+        <!--<div id="dropdownContainer"
+        style="position: absolute; top: 20%; left: 70%; transform: translateX(-50%);
+       z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
+      <label for="overlayDropdown">Mode:</label>
+      <select id="overlayDropdown"
+              style="background-color: rgba(255,0,0,0.5); color: white; border: 2px solid black; cursor: pointer;">
+         <option value="day">Day</option>
+         <option value="night">Night</option>
+         <option value="custom">Custom</option>
+      </select>
+   </div>-->
+        <!--<div id="formContainer"
+    style="position: absolute; top: 40%; left: 50%; transform: translateX(-50%);
+   z-index: 10; display: flex; flex-direction: column; gap: 10px; color: white; font-weight: bold;">-->
+        <!-- Text Input -->
+        <!--<label for="overlayTextInput">Enter Name:</label>
+   <input type="text" id="overlayTextInput"
+          style="font-size: 30px; padding: 20px;
+                background-color: rgba(255, 255, 255, 0.5);
+                border: 2px solid black; border-radius: 10px;">-->
+        <!-- Checkbox -->
+        <!--<label>
+      <input type="checkbox" id="overlayCheckbox">
+      Enable Feature
+   </label>-->
+        <!-- Radio Buttons -->
+        <!--<div>
+         <span>Choose Mode:</span><br>
+         <label><input type="radio" name="mode" value="easy" checked> Easy</label><br>
+         <label><input type="radio" name="mode" value="medium"> Medium</label><br>
+         <label><input type="radio" name="mode" value="hard"> Hard</label>
+      </div>
+   </div>-->
+     </div>
+
+     <!--<script type="text/javascript">
+        // Your existing Module setup code …
+
+        // Attach the button handler AFTER the DOM element exists
+        document.getElementById('overlayButton').addEventListener('click', () => {
+           console.log('Button clicked (does nothing yet)');
+        });
+     </script>-->
+     <!--<script type="text/javascript">
+        const button = document.getElementById('overlayButton');
+
+        button.addEventListener('click', () => {
+           // Toggle between two colors
+           if (button.style.backgroundColor === 'rgba(0, 0, 0, 0.5)') {
+              button.style.backgroundColor = 'rgba(0, 128, 0, 0.5)'; // semi-transparent green
+           } else {
+              button.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // semi-transparent black
+           }
+        });
+     </script>-->
+     <script type="text/javascript">
+        const overlaySlider_boom = document.getElementById('overlaySlider_boom');
+        const overlayText_boom   = document.getElementById('overlayText_boom');
+        // Boom 연결
+        overlaySlider_boom.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_boom.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+
+           // 2. WASM 함수 호출 (함수명이 set_angle_boom 가정)
+           //Module.ccall('set_angle_boom', null, ['number'], [value]);
+           if (typeof Module !== 'undefined' && Module._set_angle_boom) {
+              // C++ 등에서 _set_boom_angle로 내보낸 경우
+              Module._set_angle_boom(numericValue);
+           }
+           // Example effect: adjust canvas background brightness
+           //   const brightness = value;
+           //   canvas.style.backgroundColor = `rgb(${brightness * 2.55}, ${brightness * 2.55}, ${brightness * 2.55})`;
+        });
+
+        const overlaySlider_stick = document.getElementById('overlaySlider_stick');
+        const overlayText_stick = document.getElementById('overlayText_stick');
+        overlaySlider_stick.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_stick.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_stick) {
+              Module._set_angle_stick(numericValue);
+           }
+        });
+
+        const overlaySlider_bucket = document.getElementById('overlaySlider_bucket');
+        const overlayText_bucket = document.getElementById('overlayText_bucket');
+        overlaySlider_bucket.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_bucket.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_bucket) {
+              Module._set_angle_bucket(numericValue);
+           }
+        });
+
+        const overlaySlider_tilt = document.getElementById('overlaySlider_tilt');
+        const overlayText_tilt = document.getElementById('overlayText_tilt');
+        overlaySlider_tilt.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_tilt.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_tilt) {
+              Module._set_angle_tilt(numericValue);
+           }
+        });
+
+        const overlaySlider_rotate = document.getElementById('overlaySlider_rotate');
+        const overlayText_rotate = document.getElementById('overlayText_rotate');
+        overlaySlider_rotate.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_rotate.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_rotate) {
+              Module._set_angle_rotate(numericValue);
+           }
+        });
+
+        const overlaySlider_lift = document.getElementById('overlaySlider_lift');
+        const overlayText_lift = document.getElementById('overlayText_lift');
+        overlaySlider_lift.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_lift.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_lift) {
+              Module._set_angle_lift(numericValue);
+           }
+        });
+
+        const overlaySlider_cabin = document.getElementById('overlaySlider_cabin');
+        const overlayText_cabin = document.getElementById('overlayText_cabin');
+        overlaySlider_cabin.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_cabin.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_cabin) {
+              Module._set_angle_cabin(numericValue);
+           }
+        });
+
+        const overlaySlider_base = document.getElementById('overlaySlider_base');
+        const overlayText_base = document.getElementById('overlayText_base');
+        overlaySlider_base.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_base.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_angle_base) {
+              Module._set_angle_base(numericValue);
+           }
+        });
+
+        const overlaySlider_panel_count = document.getElementById('overlaySlider_panel_count');
+        const overlayText_panel_count = document.getElementById('overlayText_panel_count');
+        overlaySlider_panel_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_panel_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_panel_count) {
+              Module._set_panel_count(numericValue);
+           }
+        });
+
+        const overlaySlider_panel_height = document.getElementById('overlaySlider_panel_height');
+        const overlayText_panel_height = document.getElementById('overlayText_panel_height');
+        overlaySlider_panel_height.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_panel_height.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_panel_height) {
+              Module._set_panel_height(numericValue);
+           }
+        });
+
+        const overlaySlider_panel_space = document.getElementById('overlaySlider_panel_space');
+        const overlayText_panel_space = document.getElementById('overlayText_panel_space');
+        overlaySlider_panel_space.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_panel_space.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_panel_space) {
+              Module._set_panel_space(numericValue);
+           }
+        });
+
+        const overlayCheckbox_tiltrotator = document.getElementById('overlayCheckbox_tiltrotator');
+        overlayCheckbox_tiltrotator.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_tiltrotator_enabled) {
+              Module._set_tiltrotator_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_grab = document.getElementById('overlayCheckbox_grab');
+        overlayCheckbox_grab.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_grab_enabled) {
+              Module._set_grab_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_output = document.getElementById('overlayCheckbox_output');
+        overlayCheckbox_output.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_output_enabled) {
+              Module._set_output_enabled(isEnabled);
+           }
+        });
+      
+        const overlaySlider_camera_target_z = document.getElementById('overlaySlider_camera_target_z');
+        const overlayText_camera_target_z = document.getElementById('overlayText_camera_target_z');
+        overlaySlider_camera_target_z.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_target_z.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_target_z) {
+              Module._set_camera_target_z(numericValue);
+           }
+        });
+
+        const overlaySlider_norm_threshold = document.getElementById('overlaySlider_norm_threshold');
+        const overlayText_norm_threshold = document.getElementById('overlayText_norm_threshold');
+        overlaySlider_norm_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_norm_threshold.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_norm_threshold) {
+              Module._set_norm_threshold(numericValue);
+           }
+        });
+
+        const overlaySlider_z_threshold = document.getElementById('overlaySlider_z_threshold');
+        const overlayText_z_threshold = document.getElementById('overlayText_z_threshold');
+        overlaySlider_z_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_z_threshold.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_z_threshold) {
+              Module._set_z_threshold(numericValue);
+           }
+        });
+
+        const overlaySlider_z_norm_threshold = document.getElementById('overlaySlider_z_norm_threshold');
+        const overlayText_z_norm_threshold = document.getElementById('overlayText_z_norm_threshold');
+        overlaySlider_z_norm_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_z_norm_threshold.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_z_norm_threshold) {
+              Module._set_z_norm_threshold(numericValue);
+           }
+        });
+
+        const overlaySlider_z_norm_threshold_scale = document.getElementById('overlaySlider_z_norm_threshold_scale');
+        const overlayText_z_norm_threshold_scale = document.getElementById('overlayText_z_norm_threshold_scale');
+        overlaySlider_z_norm_threshold_scale.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_z_norm_threshold_scale.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_z_norm_threshold_scale) {
+              Module._set_z_norm_threshold_scale(numericValue);
+           }
+        });
+
+        const overlaySlider_outline_w = document.getElementById('overlaySlider_outline_w');
+        const overlayText_outline_w = document.getElementById('overlayText_outline_w');
+        overlaySlider_outline_w.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_outline_w.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_outline_w) {
+              Module._set_outline_w(numericValue);
+           }
+        });
+
+        const originBtn = document.getElementById('overlayButton_origin');
+        originBtn.addEventListener('click', () => {
+           //console.log("Origin button clicked!");
+
+           if (typeof Module !== 'undefined' && Module._set_origin) {
+              Module._set_origin();
+           }
+        });
+
+        const color_Excavator = document.getElementById('idColorExcavator');
+        color_Excavator.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_excavator) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_excavator(colorInt);
+              }
+           }
+        });
+        const color_Panel = document.getElementById('idColorPanel');
+        color_Panel.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel(colorInt);
+              }
+           }
+        });
+        const color_Pile = document.getElementById('idColorPile');
+        color_Pile.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_pile) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_pile(colorInt);
+              }
+           }
+        });
+        const color_Outline = document.getElementById('idColorOutline');
+        color_Outline.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_outline) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_outline(colorInt);
+              }
+           }
+        });
+        const color_BG = document.getElementById('idColorBG');
+        color_BG.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_bg) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_bg(colorInt);
+              }
+           }
+        });
+
+        const canvas = document.getElementById('canvas');
+
+     </script>
+     <textarea id="output" rows="8"></textarea>
+
+     <script type='text/javascript'>
+        var statusElement = document.getElementById('status');
+        var progressElement = document.getElementById('progress');
+        var spinnerElement = document.getElementById('spinner');
+
+        var Module = {
+           print: (function () {
+              var element = document.getElementById('output');
+              if (element) element.value = ''; // clear browser cache
+              return function (text) {
+                 if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                 // These replacements are necessary if you render to raw HTML
+                 //text = text.replace(/&/g, "&amp;");
+                 //text = text.replace(/</g, "&lt;");
+                 //text = text.replace(/>/g, "&gt;");
+                 //text = text.replace('\n', '<br>', 'g');
+                 console.log(text);
+                 if (element) {
+                    element.value += text + "\n";
+                    element.scrollTop = element.scrollHeight; // focus on bottom
+                 }
+              };
+           })(),
+           canvas: (() => {
+              var canvas = document.getElementById('canvas');
+
+              // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+              // application robust, you may want to override this behavior before shipping!
+              // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+              canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+              //canvas.width = canvas.height * 1.6;
+              //canvas.width = canvas.height * 1.0;
+              canvas.width = window.innerWidth
+              canvas.height = canvas.width * 0.75;
+              return canvas;
+           })(),
+           setStatus: (text) => {
+              if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+              if (text === Module.setStatus.last.text) return;
+              var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+              var now = Date.now();
+              if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+              Module.setStatus.last.time = now;
+              Module.setStatus.last.text = text;
+              if (m) {
+                 text = m[1];
+                 progressElement.value = parseInt(m[2]) * 100;
+                 progressElement.max = parseInt(m[4]) * 100;
+                 progressElement.hidden = false;
+                 spinnerElement.hidden = false;
+              } else {
+                 progressElement.value = null;
+                 progressElement.max = null;
+                 progressElement.hidden = true;
+                 if (!text) spinnerElement.style.display = 'none';
+              }
+              statusElement.innerHTML = text;
+           },
+           totalDependencies: 0,
+           monitorRunDependencies: (left) => {
+              this.totalDependencies = Math.max(this.totalDependencies, left);
+              Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+           }
+        };
+        Module.setStatus('Downloading...');
+        window.onerror = (event) => {
+           // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+           Module.setStatus('Exception thrown, see JavaScript console');
+           spinnerElement.style.display = 'none';
+           Module.setStatus = (text) => {
+              if (text) console.error('[post-exception status] ' + text);
+           };
+        };
+     </script>
+
+     <!--<script>
+        // Create the AudioContext as a global variable
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+     </script>-->
+
+     <!-- <script src="./http_server/coi-serviceworker.js"></script>-->
+     <!-- <script src="coi-serviceworker.js"></script>-->
+     <script async type="text/javascript" src="./app_wasm.js"></script>
+  </body>
+</html>
