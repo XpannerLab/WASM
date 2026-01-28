@@ -164,9 +164,14 @@ canvas.emscripten { border: 0px none; background-color: black; }
              style="position: absolute; top: 10px; left: 10px; z-index: 10;
             display: flex; flex-direction: column; gap: 12px;">
 
+           <div id="slider_row_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Row Count</span>
+              <input type="range" id="overlaySlider_row_count" min="1" max="51" step="2"value="1" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_row_count" style="min-width: 30px;">1</span>
+           </div>
            <div id="slider_panel_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">Panel Count</span>
-              <input type="range" id="overlaySlider_panel_count" min="0" max="50" value="0" style="width: 150px; cursor: pointer;">
+              <input type="range" id="overlaySlider_panel_count" min="0" max="300" value="0" style="width: 150px; cursor: pointer;">
               <span id="overlayText_panel_count" style="min-width: 30px;">0</span>
            </div>
 
@@ -178,8 +183,8 @@ canvas.emscripten { border: 0px none; background-color: black; }
 
            <div id="slider_panel_space" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">Panel Space</span>
-              <input type="range" id="overlaySlider_panel_space" min="3.0" max="5.0" step="0.1" value="3.0" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_panel_space" style="min-width: 30px;">3.0 m</span>
+              <input type="range" id="overlaySlider_panel_space" min="6.0" max="10.0" step="0.1" value="6.0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_panel_space" style="min-width: 30px;">6.0 m</span>
            </div>
 
            <div id="slider_base" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
@@ -274,8 +279,8 @@ canvas.emscripten { border: 0px none; background-color: black; }
            </div>
            <div id="slider_outline_w" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">outline</span>
-              <input type="range" id="overlaySlider_outline_w" min="1" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_outline_w" style="min-width: 30px;">2</span>
+              <input type="range" id="overlaySlider_outline_w" min="1" max="5" step="1" value="1" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_outline_w" style="min-width: 30px;">1</span>
            </div>
 
         </div>
@@ -473,6 +478,18 @@ canvas.emscripten { border: 0px none; background-color: black; }
            const numericValue = parseFloat(value);
            if (typeof Module !== 'undefined' && Module._set_angle_base) {
               Module._set_angle_base(numericValue);
+           }
+        });
+
+        const overlaySlider_row_count = document.getElementById('overlaySlider_row_count');
+        const overlayText_row_count = document.getElementById('overlayText_row_count');
+        overlaySlider_row_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_row_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_row_count) {
+              Module._set_row_count(numericValue);
            }
         });
 
