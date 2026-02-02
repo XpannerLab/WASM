@@ -166,13 +166,13 @@ canvas.emscripten { border: 0px none; background-color: black; }
 
            <div id="slider_row_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">Row Count</span>
-       <!--       <input type="range" id="overlaySlider_row_count" min="1" max="101" step="2" value="1" style="width: 150px; cursor: pointer;">-->
+              <!--       <input type="range" id="overlaySlider_row_count" min="1" max="101" step="2" value="1" style="width: 150px; cursor: pointer;">-->
               <input type="range" id="overlaySlider_row_count" min="1" max="201" step="2" value="1" style="width: 150px; cursor: pointer;">
               <span id="overlayText_row_count" style="min-width: 30px;">1</span>
            </div>
            <div id="slider_panel_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">Panel Count</span>
-  <!--            <input type="range" id="overlaySlider_panel_count" min="0" max="600" value="0" style="width: 150px; cursor: pointer;">-->
+              <!--            <input type="range" id="overlaySlider_panel_count" min="0" max="600" value="0" style="width: 150px; cursor: pointer;">-->
               <input type="range" id="overlaySlider_panel_count" min="0" max="1200" value="5" style="width: 150px; cursor: pointer;">
               <span id="overlayText_panel_count" style="min-width: 30px;">5</span>
            </div>
@@ -255,29 +255,34 @@ canvas.emscripten { border: 0px none; background-color: black; }
            </label>
 
            <label>
+              <input type="checkbox" id="overlayCheckbox_perspective">
+              Perspective View
+           </label>
+
+           <label>
               <input type="checkbox" id="overlayCheckbox_output">
               Output
            </label>
 
            <div id="slider_norm_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">n_threshold</span>
-              <input type="range" id="overlaySlider_norm_threshold" min="0.0" max="2.0" step="0.01" value="0.25" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_norm_threshold" style="min-width: 30px;">0.25</span>
+              <input type="range" id="overlaySlider_norm_threshold" min="0.0" max="0.5" step="0.01" value="0.1" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_norm_threshold" style="min-width: 30px;">0.1</span>
            </div>
            <div id="slider_z_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">z_threshold</span>
-              <input type="range" id="overlaySlider_z_threshold" min="0.0" max="3.0" step="0.01" value="0.20" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_z_threshold" style="min-width: 30px;">0.20</span>
+              <input type="range" id="overlaySlider_z_threshold" min="0.0" max="1.0" step="0.01" value="0.1" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_z_threshold" style="min-width: 30px;">0.1</span>
            </div>
            <div id="slider_z_norm_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">z_n_th</span>
-              <input type="range" id="overlaySlider_z_norm_threshold" min="0.0" max="2.0" step="0.01" value="0.30" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_z_norm_threshold" style="min-width: 30px;">0.30</span>
+              <input type="range" id="overlaySlider_z_norm_threshold" min="0.0" max="1.0" step="0.001" value="0.10" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_z_norm_threshold" style="min-width: 30px;">0.10</span>
            </div>
            <div id="slider_z_norm_threshold_scale" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">z_n_th_scl</span>
-              <input type="range" id="overlaySlider_z_norm_threshold_scale" min="0.0" max="50.0" step="1.0" value="12" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_z_norm_threshold_scale" style="min-width: 30px;">12</span>
+              <input type="range" id="overlaySlider_z_norm_threshold_scale" min="0.0" max="50.0" step="1.0" value="35" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_z_norm_threshold_scale" style="min-width: 30px;">35</span>
            </div>
            <div id="slider_outline_w" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">outline</span>
@@ -558,6 +563,21 @@ canvas.emscripten { border: 0px none; background-color: black; }
            // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
            if (Module._set_grab_enabled) {
               Module._set_grab_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_perspective = document.getElementById('overlayCheckbox_perspective');
+        overlayCheckbox_perspective.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_camera_perspective) {
+              Module._set_camera_perspective(isEnabled);
            }
         });
 
