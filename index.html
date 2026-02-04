@@ -255,6 +255,12 @@ canvas.emscripten { border: 0px none; background-color: black; }
               <span id="overlayText_camera_far_z" style="min-width: 30px;">100 m</span>
            </div>
 
+           <div id="slider_view_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">View Count</span>
+              <input type="range" id="overlaySlider_view_count" min="1" max="3" step="1" value="3" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_view_count" style="min-width: 30px;">3</span>
+           </div>
+
            <!--Checkbox-->
            <label>
               <input type="checkbox" id="overlayCheckbox_tiltrotator" checked>
@@ -316,29 +322,29 @@ canvas.emscripten { border: 0px none; background-color: black; }
       </select>
    </div>-->
 
-        <div style="position: absolute; top: 5%; right: 20px; z-index: 10;
-            background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px;
-            display: grid;
-            grid-template-columns: 1fr auto; /* Text takes space, picker is auto-sized */
-            align-items: center;
-            column-gap: 10px; row-gap: 5px;
-            color: green; font-weight: bold; font-family: sans-serif;">
+      <div style="position: absolute; top: 5%; right: 20px; z-index: 10;
+         background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px;
+         display: grid;
+         grid-template-columns: 1fr auto; /* Text takes space, picker is auto-sized */
+         align-items: center;
+         column-gap: 10px; row-gap: 5px;
+         color: green; font-weight: bold; font-family: sans-serif;">
 
-           <label for="idColorExcavator" style="text-align: left;">Excavator</label>
-           <input type="color" id="idColorExcavator" value="#ffffff">
+         <label for="idColorExcavator" style="text-align: left;">Excavator</label>
+         <input type="color" id="idColorExcavator" value="#ffffff">
 
-           <label for="idColorPanel" style="text-align: left;">Panel</label>
-           <input type="color" id="idColorPanel" value="#ffffff">
+         <label for="idColorPanel" style="text-align: left;">Panel</label>
+         <input type="color" id="idColorPanel" value="#ffffff">
 
-           <label for="idColorPile" style="text-align: left;">Pile</label>
-           <input type="color" id="idColorPile" value="#ffffff">
+         <label for="idColorPile" style="text-align: left;">Pile</label>
+         <input type="color" id="idColorPile" value="#ffffff">
 
-           <label for="idColorOutline" style="text-align: left;">Outline</label>
-           <input type="color" id="idColorOutline" value="#000000">
+         <label for="idColorOutline" style="text-align: left;">Outline</label>
+         <input type="color" id="idColorOutline" value="#000000">
 
-           <label for="idColorBG" style="text-align: left;">Background</label>
-           <input type="color" id="idColorBG" value="#ffffff">
-        </div>
+         <label for="idColorBG" style="text-align: left;">Background</label>
+         <input type="color" id="idColorBG" value="#ffffff">
+      </div>
 
         <!--<div id="dropdownContainer"
         style="position: absolute; top: 20%; left: 70%; transform: translateX(-50%);
@@ -641,6 +647,18 @@ canvas.emscripten { border: 0px none; background-color: black; }
            const numericValue = parseFloat(value);
            if (typeof Module !== 'undefined' && Module._set_camera_far_z) {
               Module._set_camera_far_z(numericValue);
+           }
+        });
+
+        const overlaySlider_view_count = document.getElementById('overlaySlider_view_count');
+        const overlayText_view_count = document.getElementById('overlayText_view_count');
+        overlaySlider_view_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_view_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_view_count) {
+              Module._set_view_count(numericValue);
            }
         });
 
