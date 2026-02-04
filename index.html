@@ -243,11 +243,11 @@ canvas.emscripten { border: 0px none; background-color: black; }
               <span id="overlayText_camera_target_z" style="min-width: 30px;">0 m</span>
            </div>
 
-           <!--<div id="slider_camera_fov" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+           <div id="slider_camera_fov" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">View FOV</span>
-              <input type="range" id="overlaySlider_camera_fov" min="50.0" max="120.0" step="1" value="90.0" style="width: 150px; cursor: pointer;">
-              <span id="overlayText_camera_fov" style="min-width: 30px;">0°</span>
-           </div>-->
+              <input type="range" id="overlaySlider_camera_fov" min="5.0" max="100.0" step="1" value="50.0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_camera_fov" style="min-width: 30px;">50°</span>
+           </div>
 
            <div id="slider_camera_far_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
               <span style="min-width: 90px;">Far Z</span>
@@ -620,17 +620,17 @@ canvas.emscripten { border: 0px none; background-color: black; }
            }
         });
 
-        //const overlaySlider_camera_fov = document.getElementById('overlaySlider_camera_fov');
-        //const overlayText_camera_fov = document.getElementById('overlayText_camera_fov');
-        //overlaySlider_camera_fov.addEventListener('input', (event) => {
-        //   const value = event.target.value;
-        //   overlayText_camera_fov.textContent = value + "°"; // update text next to slider
+        const overlaySlider_camera_fov = document.getElementById('overlaySlider_camera_fov');
+        const overlayText_camera_fov = document.getElementById('overlayText_camera_fov');
+        overlaySlider_camera_fov.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_fov.textContent = value + "°"; // update text next to slider
 
-        //   const numericValue = parseFloat(value);
-        //   if (typeof Module !== 'undefined' && Module._set_camera_fov) {
-        //      Module._set_camera_fov(numericValue);
-        //   }
-        //});
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_fov) {
+              Module._set_camera_fov(numericValue);
+           }
+        });
 
         const overlaySlider_camera_far_z = document.getElementById('overlaySlider_camera_far_z');
         const overlayText_camera_far_z = document.getElementById('overlayText_camera_far_z');
