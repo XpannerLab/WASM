@@ -109,19 +109,19 @@ canvas.emscripten { border: 0px none; background-color: black; }
   </head>
   <link rel="icon" type="image/png" href="favicon.png">
   <body>
-    <!-- <a href="http://emscripten.org"><img id="company_logo" src="logo.png"></a>-->
+     <!-- <a href="http://emscripten.org"><img id="company_logo" src="logo.png"></a>-->
 
      <div class="spinner" id='spinner'></div>
      <div class="emscripten" id="status">Downloading...</div>
 
      <!--<span id='controls'>
-        <span><input type="checkbox" id="resize">Resize canvas</span>
-        <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
-        <span>
-           <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked,
-                                                                                document.getElementById('resize').checked)">
-        </span>
-     </span>-->
+      <span><input type="checkbox" id="resize">Resize canvas</span>
+      <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
+      <span>
+         <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked,
+                                                                              document.getElementById('resize').checked)">
+      </span>
+   </span>-->
 
      <div class="emscripten">
         <progress value="0" max="100" id="progress" hidden=1></progress>
@@ -132,8 +132,8 @@ canvas.emscripten { border: 0px none; background-color: black; }
 
         <!--Button overlay-->
         <!--<button id="overlayButton"
-     style="position: absolute; bottom: 0; left: 0; z-index: 10;"> Click Me
-   </button>-->
+        style="position: absolute; bottom: 0; left: 0; z-index: 10;"> Click Me
+      </button>-->
         <button id="overlayButton_origin"
                 style="position: absolute; bottom: 2.5%; left: 50%; transform: translateX(-50%);
                /*z-index: 10; background-color: rgba(255, 0, 0, 0.25); border: none; color: white;*/
@@ -144,21 +144,21 @@ canvas.emscripten { border: 0px none; background-color: black; }
 
         <!-- Overlay Slider + Text -->
         <!--<div id="slider_boom"
-        style="position: absolute; top: 10px; left: 10px; transform: none;
-         z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
-      <span id="overlayText_0">Boom Angle</span>
-      <input type="range" id="overlaySlider" min="0" max="100" value="0"
-             style="width: 100px; cursor: pointer;">
-      <span id="overlayText">50</span>
-   </div>
-   <div id="slider_boom_stick"
-        style="position: absolute; top: 30px; left: 10px; transform: none;
-         z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
-      <span id="overlayText_0">Stick Angle</span>
-      <input type="range" id="overlaySlider" min="0" max="100" value="0"
-             style="width: 100px; cursor: pointer;">
-      <span id="overlayText">50</span>
-   </div>-->
+           style="position: absolute; top: 10px; left: 10px; transform: none;
+            z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
+         <span id="overlayText_0">Boom Angle</span>
+         <input type="range" id="overlaySlider" min="0" max="100" value="0"
+                style="width: 100px; cursor: pointer;">
+         <span id="overlayText">50</span>
+      </div>
+      <div id="slider_boom_stick"
+           style="position: absolute; top: 30px; left: 10px; transform: none;
+            z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
+         <span id="overlayText_0">Stick Angle</span>
+         <input type="range" id="overlaySlider" min="0" max="100" value="0"
+                style="width: 100px; cursor: pointer;">
+         <span id="overlayText">50</span>
+      </div>-->
 
         <div id="controls_wrapper"
              style="position: absolute; top: 10px; left: 10px; z-index: 10;
@@ -261,6 +261,18 @@ canvas.emscripten { border: 0px none; background-color: black; }
               <span id="overlayText_view_count" style="min-width: 30px;">3</span>
            </div>
 
+           <div id="slider_arrow_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Arrow Count</span>
+              <input type="range" id="overlaySlider_arrow_count" min="0" max="200" step="1" value="0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_arrow_count" style="min-width: 30px;">0</span>
+           </div>
+
+           <div id="slider_arrow_dir" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+              <span style="min-width: 90px;">Arrow Dir</span>
+              <input type="range" id="overlaySlider_arrow_dir" min="-3.0" max="3.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+              <span id="overlayText_arrow_dir" style="min-width: 30px;">0.0</span>
+           </div>
+
            <!--Checkbox-->
            <label>
               <input type="checkbox" id="overlayCheckbox_tiltrotator" checked>
@@ -311,18 +323,18 @@ canvas.emscripten { border: 0px none; background-color: black; }
         </div>
 
         <!--<div id="listBoxContainer"
-        style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
-       z-index: 10; color: white; font-weight: bold;">
-      <label for="overlayList" style="margin-right: 10px;">Mode:</label>
-      <select id="overlayList" size="3"
-              style="background-color: rgba(255,0,0,0.5); color: white; border: 2px solid black; cursor: pointer;">
-         <option value="day">Day</option>
-         <option value="night">Night</option>
-         <option value="custom">Custom</option>
-      </select>
-   </div>-->
+           style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+          z-index: 10; color: white; font-weight: bold;">
+         <label for="overlayList" style="margin-right: 10px;">Mode:</label>
+         <select id="overlayList" size="3"
+                 style="background-color: rgba(255,0,0,0.5); color: white; border: 2px solid black; cursor: pointer;">
+            <option value="day">Day</option>
+            <option value="night">Night</option>
+            <option value="custom">Custom</option>
+         </select>
+      </div>-->
 
-      <div style="position: absolute; top: 5%; right: 20px; z-index: 10;
+        <div style="position: absolute; top: 5%; right: 20px; z-index: 10;
          background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px;
          display: grid;
          grid-template-columns: 1fr auto; /* Text takes space, picker is auto-sized */
@@ -330,80 +342,83 @@ canvas.emscripten { border: 0px none; background-color: black; }
          column-gap: 10px; row-gap: 5px;
          color: green; font-weight: bold; font-family: sans-serif;">
 
-         <label for="idColorExcavator" style="text-align: left;">Excavator</label>
-         <input type="color" id="idColorExcavator" value="#ffffff">
+           <label for="idColorExcavator" style="text-align: left;">Excavator</label>
+           <input type="color" id="idColorExcavator" value="#ffffff">
 
-         <label for="idColorPanel" style="text-align: left;">Panel</label>
-         <input type="color" id="idColorPanel" value="#ffffff">
+           <label for="idColorPanel" style="text-align: left;">Panel</label>
+           <input type="color" id="idColorPanel" value="#ffffff">
 
-         <label for="idColorPile" style="text-align: left;">Pile</label>
-         <input type="color" id="idColorPile" value="#ffffff">
+           <label for="idColorPile" style="text-align: left;">Pile</label>
+           <input type="color" id="idColorPile" value="#ffffff">
 
-         <label for="idColorOutline" style="text-align: left;">Outline</label>
-         <input type="color" id="idColorOutline" value="#000000">
+           <label for="idColorOutline" style="text-align: left;">Outline</label>
+           <input type="color" id="idColorOutline" value="#000000">
 
-         <label for="idColorBG" style="text-align: left;">Background</label>
-         <input type="color" id="idColorBG" value="#ffffff">
-      </div>
+           <label for="idColorBG" style="text-align: left;">Background</label>
+           <input type="color" id="idColorBG" value="#ffffff">
+
+           <label for="idColorArrow" style="text-align: left;">Arrow</label>
+           <input type="color" id="idColorArrow" value="#c8ff00">
+        </div>
 
         <!--<div id="dropdownContainer"
-        style="position: absolute; top: 20%; left: 70%; transform: translateX(-50%);
-       z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
-      <label for="overlayDropdown">Mode:</label>
-      <select id="overlayDropdown"
-              style="background-color: rgba(255,0,0,0.5); color: white; border: 2px solid black; cursor: pointer;">
-         <option value="day">Day</option>
-         <option value="night">Night</option>
-         <option value="custom">Custom</option>
-      </select>
-   </div>-->
+           style="position: absolute; top: 20%; left: 70%; transform: translateX(-50%);
+          z-index: 10; display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
+         <label for="overlayDropdown">Mode:</label>
+         <select id="overlayDropdown"
+                 style="background-color: rgba(255,0,0,0.5); color: white; border: 2px solid black; cursor: pointer;">
+            <option value="day">Day</option>
+            <option value="night">Night</option>
+            <option value="custom">Custom</option>
+         </select>
+      </div>-->
         <!--<div id="formContainer"
-    style="position: absolute; top: 40%; left: 50%; transform: translateX(-50%);
-   z-index: 10; display: flex; flex-direction: column; gap: 10px; color: white; font-weight: bold;">-->
+       style="position: absolute; top: 40%; left: 50%; transform: translateX(-50%);
+      z-index: 10; display: flex; flex-direction: column; gap: 10px; color: white; font-weight: bold;">-->
         <!-- Text Input -->
         <!--<label for="overlayTextInput">Enter Name:</label>
-   <input type="text" id="overlayTextInput"
-          style="font-size: 30px; padding: 20px;
-                background-color: rgba(255, 255, 255, 0.5);
-                border: 2px solid black; border-radius: 10px;">-->
+      <input type="text" id="overlayTextInput"
+             style="font-size: 30px; padding: 20px;
+                   background-color: rgba(255, 255, 255, 0.5);
+                   border: 2px solid black; border-radius: 10px;">-->
         <!-- Checkbox -->
         <!--<label>
-      <input type="checkbox" id="overlayCheckbox">
-      Enable Feature
-   </label>-->
+         <input type="checkbox" id="overlayCheckbox">
+         Enable Feature
+      </label>-->
         <!-- Radio Buttons -->
         <!--<div>
-         <span>Choose Mode:</span><br>
-         <label><input type="radio" name="mode" value="easy" checked> Easy</label><br>
-         <label><input type="radio" name="mode" value="medium"> Medium</label><br>
-         <label><input type="radio" name="mode" value="hard"> Hard</label>
-      </div>
-   </div>-->
+            <span>Choose Mode:</span><br>
+            <label><input type="radio" name="mode" value="easy" checked> Easy</label><br>
+            <label><input type="radio" name="mode" value="medium"> Medium</label><br>
+            <label><input type="radio" name="mode" value="hard"> Hard</label>
+         </div>
+      </div>-->
      </div>
 
      <!--<script type="text/javascript">
-        // Your existing Module setup code …
+      // Your existing Module setup code …
 
-        // Attach the button handler AFTER the DOM element exists
-        document.getElementById('overlayButton').addEventListener('click', () => {
-           console.log('Button clicked (does nothing yet)');
-        });
-     </script>-->
+      // Attach the button handler AFTER the DOM element exists
+      document.getElementById('overlayButton').addEventListener('click', () => {
+         console.log('Button clicked (does nothing yet)');
+      });
+   </script>-->
      <!--<script type="text/javascript">
-        const button = document.getElementById('overlayButton');
+      const button = document.getElementById('overlayButton');
 
-        button.addEventListener('click', () => {
-           // Toggle between two colors
-           if (button.style.backgroundColor === 'rgba(0, 0, 0, 0.5)') {
-              button.style.backgroundColor = 'rgba(0, 128, 0, 0.5)'; // semi-transparent green
-           } else {
-              button.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // semi-transparent black
-           }
-        });
-     </script>-->
+      button.addEventListener('click', () => {
+         // Toggle between two colors
+         if (button.style.backgroundColor === 'rgba(0, 0, 0, 0.5)') {
+            button.style.backgroundColor = 'rgba(0, 128, 0, 0.5)'; // semi-transparent green
+         } else {
+            button.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // semi-transparent black
+         }
+      });
+   </script>-->
      <script type="text/javascript">
         const overlaySlider_boom = document.getElementById('overlaySlider_boom');
-        const overlayText_boom   = document.getElementById('overlayText_boom');
+        const overlayText_boom = document.getElementById('overlayText_boom');
         // Boom 연결
         overlaySlider_boom.addEventListener('input', (event) => {
            const value = event.target.value;
@@ -501,8 +516,8 @@ canvas.emscripten { border: 0px none; background-color: black; }
            overlayText_base.textContent = value + " m"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_base) {
-              Module._set_angle_base(numericValue);
+           if (typeof Module !== 'undefined' && Module._set_pos_offset_base) {
+              Module._set_pos_offset_base(numericValue);
            }
         });
 
@@ -613,7 +628,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
               Module._set_output_enabled(isEnabled);
            }
         });
-      
+
         const overlaySlider_camera_target_z = document.getElementById('overlaySlider_camera_target_z');
         const overlayText_camera_target_z = document.getElementById('overlayText_camera_target_z');
         overlaySlider_camera_target_z.addEventListener('input', (event) => {
@@ -659,6 +674,30 @@ canvas.emscripten { border: 0px none; background-color: black; }
            const numericValue = parseFloat(value);
            if (typeof Module !== 'undefined' && Module._set_view_count) {
               Module._set_view_count(numericValue);
+           }
+        });
+
+        const overlaySlider_arrow_count = document.getElementById('overlaySlider_arrow_count');
+        const overlayText_arrow_count = document.getElementById('overlayText_arrow_count');
+        overlaySlider_arrow_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_arrow_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_arrow_count) {
+              Module._set_arrow_count(numericValue);
+           }
+        });
+
+        const overlaySlider_arrow_dir = document.getElementById('overlaySlider_arrow_dir');
+        const overlayText_arrow_dir = document.getElementById('overlayText_arrow_dir');
+        overlaySlider_arrow_dir.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_arrow_dir.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_arrow_dir) {
+              Module._set_arrow_dir(numericValue);
            }
         });
 
@@ -786,6 +825,17 @@ canvas.emscripten { border: 0px none; background-color: black; }
               }
            }
         });
+        const color_Arrow = document.getElementById('idColorArrow');
+        color_Arrow.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_bg) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_arrow(colorInt);
+              }
+           }
+        });
 
         const canvas = document.getElementById('canvas');
 
@@ -869,10 +919,9 @@ canvas.emscripten { border: 0px none; background-color: black; }
      </script>
 
      <!--<script>
-        // Create the AudioContext as a global variable
-        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-     </script>-->
-
+      // Create the AudioContext as a global variable
+      window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+   </script>-->
      <!-- <script src="./http_server/coi-serviceworker.js"></script>-->
      <!-- <script src="coi-serviceworker.js"></script>-->
      <script async type="text/javascript" src="./app_wasm.js"></script>
