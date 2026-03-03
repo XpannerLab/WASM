@@ -143,7 +143,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
         </button>
 
         <div id="controls_wrapper"
-               style="position: absolute; top: 10px; left: 10px; z-index: 10;
+             style="position: absolute; top: 10px; left: 10px; z-index: 10;
                display: flex; flex-direction: column; gap: 12px;
                --group_bg_color: rgba(0, 0, 0, 0.0);
                --group_button_color: rgba(0, 0, 255, 0.1);
@@ -151,7 +151,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
                --group_border_size: 1px;
                --group_color: rgba(0, 0, 255, 0.0);
                ">
-              
+
 
            <!-------------------------------------->
            <!--Panel-->
@@ -193,9 +193,84 @@ canvas.emscripten { border: 0px none; background-color: black; }
                  </div>
 
                  <label>
-                    <input type="checkbox" id="overlayCheckbox_show_panels" checked>
+<!--                    <input type="checkbox" id="overlayCheckbox_show_panels" checked>-->
+                    <input type="checkbox" id="overlayCheckbox_show_panels">
                     Show Panels
                  </label>
+
+              </div>
+           </div>
+
+           <!-------------------------------------->
+           <!--DB-->
+           <!-------------------------------------->
+           <div id="db_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+              <button id="btn_toggle_db"
+                      style="width: 100%; cursor: pointer;
+                           background: var(--group_button_color);
+                           color: green;
+                           font-weight: bold; font-size: 16px;
+                           border: none; border-bottom: 1px solid green; padding: 8px; font-weight: bold; text-align: left; outline: none; ">
+                 ▼ DataBase
+              </button>
+              <div id="db_group" style="display: flex; flex-direction: column; gap: 12px; padding: 15px;
+                                    background: var(--group_color); color: green; font-weight: bold; font-size: 14px; ">
+
+                 <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; width: 100%;">
+                    <span id="selected_filename" style="
+                        flex: 1;
+                        font-size: 12px;
+                        color: rgba(255, 0, 0, 1.0);
+                        font-weight: normal;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        /* Updated Border Color */
+                        border: 1px solid rgba(0, 0, 255, 1.0);
+                        border-radius: 4px;
+                        padding: 10px 8px; /* Adjusted to align with button height */
+                        background: rgba(255, 255, 255, 0.5);
+                  ">
+                       No file selected
+                    </span>
+
+                    <label for="db_file_input" style="
+                        cursor: pointer;
+                        flex-shrink: 0;
+                        width: 32px; height: 32px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: rgba(255, 255, 255, 0.5);
+                        /* Changed border color to red */
+                        border: 1px solid rgba(0, 0, 255, 1.0);
+                        border-radius: 4px;
+                        transition: 0.3s;
+                        font-size: 18px;
+                        line-height: 1;">
+                       📂
+                    </label>
+                    <!--                  <input type="file" id="db_file_input" style="display: none;" accept=".db, .sqlite, .sqlite3">-->
+                    <input type="file" id="db_file_input" style="display: none;" accept=".txt, .db, .sqlite, .sqlite3">
+                 </div>
+
+                 <div id="slider_unit_size" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Grid Size</span>
+                    <input type="range" id="overlaySlider_unit_size" min="10" max="20" step="1" value="10" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_unit_size" style="min-width: 30px;">10m</span>
+                 </div>
+
+                 <div id="slider_unit_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Grid Count</span>
+                    <input type="range" id="overlaySlider_unit_count" min="2" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_unit_count" style="min-width: 30px;">2x2</span>
+                 </div>
+
+                 <div id="slider_view_range" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">View Range</span>
+                    <input type="range" id="overlaySlider_view_range" min="10" max="20" step="1" value="10" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_view_range" style="min-width: 30px;">10m</span>
+                 </div>
 
               </div>
            </div>
@@ -499,10 +574,143 @@ canvas.emscripten { border: 0px none; background-color: black; }
         });
 
         //================================
+        // DataBase
+        //================================
+        const dbGroup = document.getElementById('db_group');
+        const btnToggleDB = document.getElementById('btn_toggle_db');
+
+        btnToggleDB.addEventListener('click', () => {
+           const isHidden = dbGroup.style.display === 'none';
+
+           if (isHidden) {
+              dbGroup.style.display = 'flex';
+              btnToggleDB.textContent = '▼ DataBase';
+              btnToggleDB.style.borderBottom = '1px solid green'; // Add line back
+           } else {
+              dbGroup.style.display = 'none';
+              btnToggleDB.textContent = '▶ DataBase';
+              btnToggleDB.style.borderBottom = 'none'; // Hide line when closed
+           }
+        });
+
+        // 1. Reference the elements
+        const dbFileInput = document.getElementById('db_file_input');
+        const selectedFilename = document.getElementById('selected_filename');
+
+        // 1. Define the global Module object BEFORE loading the JS file
+        var Module = {
+           onRuntimeInitialized: function () {
+              console.log("WASM Runtime is fully initialized.");
+           }
+        };
+
+        // --- GLOBAL SCOPE ---
+        let virtual_file_name = null; // Only the filename needs to be global to remember what to unlink
+
+        // 2. Listen for the 'change' event (triggered after user selects a file)
+        dbFileInput.addEventListener('change', function (e) {
+           // Get the first file from the list
+           const file = e.target.files[0];
+
+           //test_file_name
+           if (file) {
+              // Update the UI with the file name
+              selectedFilename.textContent = `${file.name}`;
+              selectedFilename.style.color = "black"; // Optional: change color to show success
+              //selectedFilename.style.color = "color: rgba(0, 0, 0, 1.0)";
+
+              // 1. CLEANUP PREVIOUS BUFFER
+              // We do this immediately when the user picks a new file
+              if (Module._close_db) {
+                 Module._close_db();
+              }
+              if (virtual_file_name !== null) {
+                 Module.FS.unlink(virtual_file_name);
+                 virtual_file_name = null;
+                 console.log("Old DB buffer freed from RAM.");
+              }
+
+              const reader = new FileReader();
+              reader.onload = function (event) {
+                 // 1. Convert file data to Uint8Array
+                 const data = new Uint8Array(event.target.result);
+
+                 // 2. Write file to Emscripten's Virtual File System
+                 // Use the ACTUAL filename from the user's computer
+                 // Update global with the new name
+                 virtual_file_name = file.name;
+
+                 Module.FS.writeFile(virtual_file_name, data);
+                 console.log("File written to Virtual FS");
+
+                 // 3. Allocate a string pointer for the filename
+                 const pathPtr = Module.allocateUTF8(virtual_file_name);
+
+                 // 4. Call the C++ function
+                 if (Module._open_db) {
+                    Module._open_db(pathPtr);
+                 }
+
+                 // 5. Clean up memory and virtual file
+                 // Cleanup the filename string pointer (C++ won't do this)
+                 Module._wasm_free(pathPtr);
+                 //Module.FS.unlink(virtual_file_name);
+
+                 // Reset the input so the same file can be selected again
+                 e.target.value = '';
+              };
+              //readAsArrayBuffer checks if 'file' object is picked from a dialog by the user
+              reader.readAsArrayBuffer(file);
+
+           //   reader.onloadend = function () {
+           //      // Clear the input value so selecting the same file triggers 'change' again
+           //      e.target.value = '';
+           //   };
+           } else {
+              // Handle case where user opens dialog but cancels
+              selectedFilename.textContent = "No file selected";
+              selectedFilename.style.color = "color: rgba(0, 0, 0, 1.0)";
+           }
+        });
+
+        /*
+        //============
+        // Create a hidden input element
+        //============
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none'; // Keep it invisible
+
+        const originBtn = document.getElementById('overlayButton_origin');
+        originBtn.addEventListener('click', () => {
+           //console.log("Origin button clicked!");
+
+           if (typeof Module !== 'undefined' && Module._set_origin) {
+              Module._set_origin();
+           }
+
+           //============
+           // Trigger the selector when the button is clicked
+           //============
+           fileInput.click();
+        });
+
+        //============
+        // Handle the file selection
+        //============
+        fileInput.addEventListener('change', (e) => {
+           const file = e.target.files[0];
+           if (file) {
+              console.log("Selected file:", file.name);
+           }
+        });
+        */
+
+        //================================
         // Machine
         //================================
-        const machineGroup = document.getElementById('machine_group');
-        const btnToggleMachine = document.getElementById('btn_toggle_machine');
+        const machineGroup       = document.getElementById('machine_group');
+        const btnToggleMachine   = document.getElementById('btn_toggle_machine');
 
         btnToggleMachine.addEventListener('click', () => {
            const isHidden = machineGroup.style.display === 'none';
@@ -518,8 +726,8 @@ canvas.emscripten { border: 0px none; background-color: black; }
            }
         });
 
-        const overlaySlider_boom = document.getElementById('overlaySlider_boom');
-        const overlayText_boom = document.getElementById('overlayText_boom');
+        const overlaySlider_boom    = document.getElementById('overlaySlider_boom');
+        const overlayText_boom      = document.getElementById('overlayText_boom');
         // Boom 연결
         overlaySlider_boom.addEventListener('input', (event) => {
            const value = event.target.value;
@@ -857,6 +1065,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
         //================================
         // Origin
         //================================
+
         const originBtn = document.getElementById('overlayButton_origin');
         originBtn.addEventListener('click', () => {
            //console.log("Origin button clicked!");
@@ -864,7 +1073,18 @@ canvas.emscripten { border: 0px none; background-color: black; }
            if (typeof Module !== 'undefined' && Module._set_origin) {
               Module._set_origin();
            }
+
+           //============
+           // Trigger the selector when the button is clicked
+           //============
+           //fileInput.click();
         });
+
+
+        //================================
+        // File
+        //================================
+
 
         //================================
         // Color
