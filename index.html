@@ -290,9 +290,15 @@ canvas.emscripten { border: 0px none; background-color: black; }
                                        background: var(--group_color); color: green; font-weight: bold; font-size: 14px;">
 
                  <div id="slider_base" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                    <span style="min-width: 90px;">Move</span>
-                    <input type="range" id="overlaySlider_base" min="-20.0" max="20.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_base" style="min-width: 30px;">0.0 m</span>
+                    <span style="min-width: 90px;">Pos X</span>
+                    <input type="range" id="overlaySlider_machine_pos_x" min="-50.0" max="50.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_x" style="min-width: 30px;">0.0 m</span>
+                 </div>
+
+                 <div id="slider_base" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Pos Y</span>
+                    <input type="range" id="overlaySlider_machine_pos_y" min="-50.0" max="50.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_y" style="min-width: 30px;">0.0 m</span>
                  </div>
 
                  <div id="slider_lift" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
@@ -348,6 +354,17 @@ canvas.emscripten { border: 0px none; background-color: black; }
                  </label>
                  <!--Checkbox-->
 
+                 <div id="slider_view_mode" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">View Mode</span>
+                    <input type="range" id="overlayslider_view_mode" min="0" max="8" step="1" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_view_mode" style="min-width: 30px;">0</span>
+                 </div>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_auto_reset" checked>
+                    Auto Reset
+                 </label>
+
               </div>
            </div>
 
@@ -378,16 +395,22 @@ canvas.emscripten { border: 0px none; background-color: black; }
                     <span id="overlayText_camera_fov" style="min-width: 30px;">50°</span>
                  </div>
 
+                 <div id="slider_camera_near_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Near Z</span>
+                    <input type="range" id="overlaySlider_camera_near_z" min="1.0" max="10.0" step="1" value="5.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_camera_near_z" style="min-width: 30px;">5 m</span>
+                 </div>
+
                  <div id="slider_camera_far_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Far Z</span>
-                    <input type="range" id="overlaySlider_camera_far_z" min="10.0" max="1000.0" step="10" value="100.0" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_camera_far_z" style="min-width: 30px;">100 m</span>
+                    <input type="range" id="overlaySlider_camera_far_z" min="10.0" max="1000.0" step="10" value="200.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_camera_far_z" style="min-width: 30px;">200 m</span>
                  </div>
 
                  <div id="slider_view_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">View Count</span>
-                    <input type="range" id="overlaySlider_view_count" min="1" max="3" step="1" value="3" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_view_count" style="min-width: 30px;">3</span>
+                    <input type="range" id="overlaySlider_view_count" min="1" max="3" step="1" value="1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_view_count" style="min-width: 30px;">1</span>
                  </div>
 
                  <div id="slider_arrow_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
@@ -842,17 +865,30 @@ canvas.emscripten { border: 0px none; background-color: black; }
            }
         });
 
-        const overlaySlider_base = document.getElementById('overlaySlider_base');
-        const overlayText_base = document.getElementById('overlayText_base');
-        overlaySlider_base.addEventListener('input', (event) => {
-           const value = event.target.value;
-           overlayText_base.textContent = value + " m"; // update text next to slider
+        const overlaySlider_machine_pos_x = document.getElementById('overlaySlider_machine_pos_x');
+        const overlayText_machine_pos_x = document.getElementById('overlayText_machine_pos_x');
 
-           const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_pos_offset_base) {
-              Module._set_pos_offset_base(numericValue);
+        const overlaySlider_machine_pos_y = document.getElementById('overlaySlider_machine_pos_y');
+        const overlayText_machine_pos_y = document.getElementById('overlayText_machine_pos_y');
+
+        // Create a reusable function to update the module
+        function updateMachinePosition() {
+           const xVal = parseFloat(overlaySlider_machine_pos_x.value);
+           const yVal = parseFloat(overlaySlider_machine_pos_y.value);
+
+           // Update the UI labels
+           overlayText_machine_pos_x.textContent = xVal + " m";
+           overlayText_machine_pos_y.textContent = yVal + " m";
+
+           // Call the WASM module with both coordinates
+           if (typeof Module !== 'undefined' && Module._set_machine_pos) {
+              Module._set_machine_pos(xVal, yVal, 0);
            }
-        });
+        }
+
+        // Attach the same function to both listeners
+        overlaySlider_machine_pos_x.addEventListener('input', updateMachinePosition);
+        overlaySlider_machine_pos_y.addEventListener('input', updateMachinePosition);
 
         //================================
         // Features
@@ -901,6 +937,16 @@ canvas.emscripten { border: 0px none; background-color: black; }
            // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
            if (Module._set_grab_enabled) {
               Module._set_grab_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_auto_reset = document.getElementById('overlayCheckbox_auto_reset');
+        overlayCheckbox_auto_reset.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+           console.log("auto_reset Enabled:", isEnabled);
+           if (Module._set_auto_reset_enabled) {
+              Module._set_auto_reset_enabled(isEnabled);
            }
         });
 
@@ -958,6 +1004,18 @@ canvas.emscripten { border: 0px none; background-color: black; }
            }
         });
 
+        const overlaySlider_camera_near_z = document.getElementById('overlaySlider_camera_near_z');
+        const overlayText_camera_near_z = document.getElementById('overlayText_camera_near_z');
+        overlaySlider_camera_near_z.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_near_z.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_near_z) {
+              Module._set_camera_near_z(numericValue);
+           }
+        });
+
         const overlaySlider_camera_far_z = document.getElementById('overlaySlider_camera_far_z');
         const overlayText_camera_far_z = document.getElementById('overlayText_camera_far_z');
         overlaySlider_camera_far_z.addEventListener('input', (event) => {
@@ -979,6 +1037,30 @@ canvas.emscripten { border: 0px none; background-color: black; }
            const numericValue = parseFloat(value);
            if (typeof Module !== 'undefined' && Module._set_view_count) {
               Module._set_view_count(numericValue);
+           }
+        });
+
+        const overlayslider_view_mode = document.getElementById('overlayslider_view_mode');
+        const overlayText_view_mode = document.getElementById('overlayText_view_mode');
+        overlayslider_view_mode.addEventListener('input', (event) => {
+           const value = event.target.value;
+           //overlayText_view_mode.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined') {
+              if (numericValue < 2) {
+                 overlayText_view_mode.textContent = "pick_" + (numericValue);
+                 _set_pick_mode(numericValue);
+              } else if (numericValue < 5) {
+                 overlayText_view_mode.textContent = "place_" + (numericValue-2);
+                 _set_place_mode(numericValue - 2);
+              } else if (numericValue < 8) {
+                 overlayText_view_mode.textContent = "relase_" + (numericValue - 5);
+                 _set_release_mode(numericValue - 5);
+              } else if (numericValue < 9) {
+                 overlayText_view_mode.textContent = "return";
+                 _set_return_mode();
+             }
            }
         });
 
