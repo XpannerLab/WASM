@@ -330,9 +330,9 @@ div.emscripten_border { border: 1px solid black; }
                     <span id="overlayText_boom_swing" style="min-width: 30px;">-0°</span>
                  </div>
                  <div id="slider_boom" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                     <span style="min-width: 90px;">Boom</span>
-                     <input type="range" id="overlaySlider_boom" min="-80" max="45" value="-45" style="width: 150px; cursor: pointer;">
-                     <span id="overlayText_boom" style="min-width: 30px;">-45°</span>
+                    <span style="min-width: 90px;">Boom</span>
+                    <input type="range" id="overlaySlider_boom" min="-80" max="45" value="-45" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_boom" style="min-width: 30px;">-45°</span>
                  </div>
 
                  <div id="slider_stick" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
@@ -367,6 +367,11 @@ div.emscripten_border { border: 1px solid black; }
                  <label>
                     <input type="checkbox" id="overlayCheckbox_grab">
                     Grab Panel
+                 </label>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_control">
+                    Control
                  </label>
                  <!--Checkbox-->
 
@@ -1008,6 +1013,20 @@ div.emscripten_border { border: 1px solid black; }
            // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
            if (Module._set_grab_enabled) {
               Module._set_grab_enabled(isEnabled);
+           }
+        });
+        const overlayCheckbox_control = document.getElementById('overlayCheckbox_control');
+        overlayCheckbox_control.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Control Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_control_enabled) {
+              Module._set_control_enabled(isEnabled);
            }
         });
 
