@@ -370,7 +370,7 @@ div.emscripten_border { border: 1px solid black; }
                  </label>
 
                  <label>
-                    <input type="checkbox" id="overlayCheckbox_control">
+                    <input type="checkbox" id="overlayCheckbox_control" checked>
                     Control
                  </label>
                  <!--Checkbox-->
@@ -934,7 +934,7 @@ div.emscripten_border { border: 1px solid black; }
 
            // Call the WASM module with both coordinates
            if (typeof Module !== 'undefined' && Module._set_machine_pos) {
-              Module._set_machine_pos(xVal, yVal, 0);
+              Module._set_machine_pos(xVal, yVal, 0.5);
            }
         }
 
