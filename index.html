@@ -272,16 +272,45 @@ div.emscripten_border { border: 1px solid black; }
                  </div>
 
                  <!--<div id="slider_grid_unit_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                  <span style="min-width: 90px;">Grid Size</span>
-                  <input type="range" id="overlaySlider_grid_unit_count" min="2" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
-                  <span id="overlayText_grid_unit_count" style="min-width: 30px;">2x2</span>
-               </div>-->
+      <span style="min-width: 90px;">Grid Size</span>
+      <input type="range" id="overlaySlider_grid_unit_count" min="2" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
+      <span id="overlayText_grid_unit_count" style="min-width: 30px;">2x2</span>
+   </div>-->
 
                  <div id="slider_view_range" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">View Range</span>
                     <input type="range" id="overlaySlider_view_range" min="10" max="30" step="1" value="10" style="width: 150px; cursor: pointer;">
                     <span id="overlayText_view_range" style="min-width: 30px;">10m</span>
                  </div>
+
+                 <form id="filePathForm" onsubmit="event.preventDefault();" style="display: flex; flex-direction: row; align-items: center; gap: 10px; font-family: sans-serif;">
+
+                    <label for="filePathInput" style="white-space: nowrap;">File Path:</label>
+
+                    <!-- Changed width to 150px for a shorter text box -->
+<!--                    <input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block.db" style="width: 150px; padding: 4px; box-sizing: border-box;">-->
+                    <input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_false_removed.db" style="width: 150px; padding: 4px; box-sizing: border-box;">
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_가나다라.db" style="width: 150px; padding: 4px; box-sizing: border-box;">-->
+
+                    <input type="submit" value="Open" style="padding: 4px 14px; cursor: pointer;">
+                 </form>
+
+                 <!-- Changing to grid creates a clean, aligned vertical layout -->
+                 <form id="combinedPanelForm" onsubmit="event.preventDefault();" style="display: grid; grid-template-columns: auto 1fr; gap: 10px; max-width: 250px; font-family: sans-serif; align-items: center;">
+
+                    <!-- Row 1 -->
+                    <label for="targetPanelId" style="white-space: nowrap; grid-column: 1;">Target Panel:</label>
+                    <input type="number" id="targetPanelId" name="targetPanelId" step="1" min="0" placeholder="123" value ="271" style="width: 80px; padding: 4px; grid-column: 2;">
+
+                    <!-- Row 2 -->
+                    <label for="nextPanelId" style="white-space: nowrap; grid-column: 1;">Next Panel:</label>
+                    <input type="number" id="nextPanelId" name="nextPanelId" step="1" min="0" placeholder="456" value ="38" style="width: 80px; padding: 4px; grid-column: 2;">
+
+                    <!-- Row 3: Spans across both columns to sit cleanly at the bottom -->
+                    <div style="grid-column: 1 / span 2; margin-top: 5px;">
+                       <input type="submit" value="Set Panels" style="padding: 4px 12px; cursor: pointer; width: 100%;">
+                    </div>
+                 </form>
 
               </div>
            </div>
@@ -302,14 +331,14 @@ div.emscripten_border { border: 1px solid black; }
 
                  <div id="slider_base_x" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Pos X</span>
-                    <input type="range" id="overlaySlider_machine_pos_x" min="-50.0" max="50.0" step="0.1" value="2.3" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_machine_pos_x" style="min-width: 30px;">2.3 m</span>
+                    <input type="range" id="overlaySlider_machine_pos_x" min="-50.0" max="50.0" step="0.1" value="2.35" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_x" style="min-width: 30px;">2.35 m</span>
                  </div>
 
                  <div id="slider_base_y" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Pos Y</span>
-                    <input type="range" id="overlaySlider_machine_pos_y" min="-50.0" max="50.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_machine_pos_y" style="min-width: 30px;">0.0 m</span>
+                    <input type="range" id="overlaySlider_machine_pos_y" min="-50.0" max="50.0" step="0.1" value="6.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_y" style="min-width: 30px;">6.0 m</span>
                  </div>
 
                  <div id="slider_lift" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
@@ -318,10 +347,28 @@ div.emscripten_border { border: 1px solid black; }
                     <span id="overlayText_lift" style="min-width: 30px;">0°</span>
                  </div>
 
-                 <div id="slider_cabin" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                    <span style="min-width: 90px;">Cabin</span>
-                    <input type="range" id="overlaySlider_cabin" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_cabin" style="min-width: 30px;">0°</span>
+                 <div id="slider_heading" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Heading</span>
+                    <input type="range" id="overlaySlider_heading" min="-270" max="270" value="90" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_heading" style="min-width: 30px;">90°</span>
+                 </div>
+
+                 <div id="slider_pitch" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Pitch</span>
+                    <input type="range" id="overlaySlider_pitch" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_pitch" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_roll" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Roll</span>
+                    <input type="range" id="overlaySlider_roll" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_roll" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_angle_lo" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Frame Angle</span>
+                    <input type="range" id="overlaySlider_angle_lo" min="-270" max="270" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_angle_lo" style="min-width: 30px;">0°</span>
                  </div>
 
                  <div id="slider_boom_swing" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
@@ -676,8 +723,8 @@ div.emscripten_border { border: 1px solid black; }
 
               // 1. CLEANUP PREVIOUS BUFFER
               // We do this immediately when the user picks a new file
-              if (Module._close_db) {
-                 Module._close_db();
+              if (Module._close_db_local) {
+                 Module._close_db_local();
               }
               if (virtual_file_name !== null) {
                  Module.FS.unlink(virtual_file_name);
@@ -702,8 +749,8 @@ div.emscripten_border { border: 1px solid black; }
                  const pathPtr = Module.allocateUTF8(virtual_file_name);
 
                  // 4. Call the C++ function
-                 if (Module._open_db) {
-                    Module._open_db(pathPtr);
+                 if (Module._open_db_local) {
+                    Module._open_db_local(pathPtr);
                  }
 
                  // 5. Clean up memory and virtual file
@@ -735,8 +782,8 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_grid_unit_size.textContent = value + " m"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_grid_unit_size) {
-              Module._set_grid_unit_size(numericValue);
+           if (typeof Module !== 'undefined' && Module._set_vtx_grid_unit_size) {
+              Module._set_vtx_grid_unit_size(numericValue);
            }
         });
 
@@ -752,6 +799,78 @@ div.emscripten_border { border: 1px solid black; }
            }
         });
 
+        const pathForm  = document.getElementById('filePathForm');
+        const pathInput = document.getElementById('filePathInput');
+
+        pathForm.addEventListener('submit', function () {
+           const pathValue = pathInput.value.trim();
+
+           if (pathValue === "") return;
+
+           const openFileEvent = new CustomEvent('openFileRequested', {
+              detail: { filePath: pathValue },
+              bubbles: true
+           });
+
+           window.dispatchEvent(openFileEvent);
+        });
+
+        // Event listener
+        window.addEventListener('openFileRequested', function (e) {
+           if (typeof Module !== 'undefined' && Module._add_char_to_string_buffer && Module._open_db) {
+              const filePath = e.detail.filePath;
+
+              // Convert the string into standard characters/bytes
+              const encoder      = new TextEncoder();
+              const stringBytes  = encoder.encode(filePath);
+
+              // Feed each character directly into the C++ buffer array
+              for (let i = 0; i < stringBytes.length; i++) {
+                 Module._add_char_to_string_buffer(stringBytes[i]);
+              }
+
+              // Fire the open command, passing the final length
+              Module._open_db();
+
+              //Module._open_db(e.detail.filePath);
+              //console.log("Opening short-path file:", e.detail.filePath);
+           }
+        });
+
+        const combinedForm = document.getElementById('combinedPanelForm');
+        const targetInput  = document.getElementById('targetPanelId');
+        const nextInput    = document.getElementById('nextPanelId');
+
+        combinedForm.addEventListener('submit', function () {
+           // Parse both values as integers
+           const targetId = parseInt(targetInput.value, 10);
+           const nextId = parseInt(nextInput.value, 10);
+
+           // Guard check: skip if either input is left blank or invalid
+           if (isNaN(targetId) || isNaN(nextId)) {
+              console.warn("Please enter valid integers for both fields.");
+              return;
+           }
+
+           // Create a single custom event containing both IDs in the detail object
+           const panelsSelectedEvent = new CustomEvent('panelsUpdated', {
+              detail: {
+                 targetId: targetId,
+                 nextId: nextId
+              },
+              bubbles: true
+           });
+
+           // Fire the event
+           window.dispatchEvent(panelsSelectedEvent);
+        });
+
+        // --- Listening for the combined event ---
+        window.addEventListener('panelsUpdated', function (e) {
+           if (typeof Module !== 'undefined' && Module._set_target_panel_id) {
+              Module._set_target_panel_id(e.detail.targetId, e.detail.nextId);
+           }
+        });
         /*
         //============
         // Create a hidden input element
@@ -816,9 +935,9 @@ div.emscripten_border { border: 1px solid black; }
 
            // 2. WASM 함수 호출 (함수명이 set_angle_boom 가정)
            //Module.ccall('set_angle_boom', null, ['number'], [value]);
-           if (typeof Module !== 'undefined' && Module._set_angle_boom_swing) {
+           if (typeof Module !== 'undefined' && Module._JntAngBoomSwing) {
               // C++ 등에서 _set_boom_angle로 내보낸 경우
-              Module._set_angle_boom_swing(numericValue);
+              Module._JntAngBoomSwing(numericValue);
            }
            // Example effect: adjust canvas background brightness
            //   const brightness = value;
@@ -834,11 +953,11 @@ div.emscripten_border { border: 1px solid black; }
 
            const numericValue = parseFloat(value);
 
-           // 2. WASM 함수 호출 (함수명이 set_angle_boom 가정)
-           //Module.ccall('set_angle_boom', null, ['number'], [value]);
-           if (typeof Module !== 'undefined' && Module._set_angle_boom) {
+           // 2. WASM 함수 호출 (함수명이 JntAngBodyToBoom 가정)
+           //Module.ccall('JntAngBodyToBoom', null, ['number'], [value]);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyToBoom) {
               // C++ 등에서 _set_boom_angle로 내보낸 경우
-              Module._set_angle_boom(numericValue);
+              Module._JntAngBodyToBoom(numericValue);
            }
            // Example effect: adjust canvas background brightness
            //   const brightness = value;
@@ -852,8 +971,8 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_stick.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_stick) {
-              Module._set_angle_stick(numericValue);
+           if (typeof Module !== 'undefined' && Module._JntAngBoom2ToArm) {
+              Module._JntAngBoom2ToArm(numericValue);
            }
         });
 
@@ -864,8 +983,8 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_bucket.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_bucket) {
-              Module._set_angle_bucket(numericValue);
+           if (typeof Module !== 'undefined' && Module._JntAngArmToBucket) {
+              Module._JntAngArmToBucket(numericValue);
            }
         });
 
@@ -876,8 +995,8 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_tilt.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_tilt) {
-              Module._set_angle_tilt(numericValue);
+           if (typeof Module !== 'undefined' && Module._JntAngTilt) {
+              Module._JntAngTilt(numericValue);
            }
         });
 
@@ -888,8 +1007,8 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_rotate.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_rotate) {
-              Module._set_angle_rotate(numericValue);
+           if (typeof Module !== 'undefined' && Module._JntAngTrRot) {
+              Module._JntAngTrRot(numericValue);
            }
         });
 
@@ -900,20 +1019,54 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_lift.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_lift) {
-              Module._set_angle_lift(numericValue);
+           if (typeof Module !== 'undefined' && Module._JngAngDozerBlade) {
+              Module._JngAngDozerBlade(numericValue);
            }
         });
 
-        const overlaySlider_cabin = document.getElementById('overlaySlider_cabin');
-        const overlayText_cabin = document.getElementById('overlayText_cabin');
-        overlaySlider_cabin.addEventListener('input', (event) => {
+        const overlaySlider_heading = document.getElementById('overlaySlider_heading');
+        const overlayText_heading = document.getElementById('overlayText_heading');
+        overlaySlider_heading.addEventListener('input', (event) => {
            const value = event.target.value;
-           overlayText_cabin.textContent = value + "°"; // update text next to slider
+           overlayText_heading.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._set_angle_cabin) {
-              Module._set_angle_cabin(numericValue);
+           if (typeof Module !== 'undefined' && Module._MachPosnUppHeading) {
+              Module._MachPosnUppHeading(numericValue);
+           }
+        });
+        const overlaySlider_pitch = document.getElementById('overlaySlider_pitch');
+        const overlayText_pitch = document.getElementById('overlayText_pitch');
+        overlaySlider_pitch.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_pitch.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyPitch) {
+              Module._JntAngBodyPitch(numericValue);
+           }
+        });
+        const overlaySlider_roll = document.getElementById('overlaySlider_roll');
+        const overlayText_roll = document.getElementById('overlayText_roll');
+        overlaySlider_roll.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_roll.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyRoll) {
+              Module._JntAngBodyRoll(numericValue);
+           }
+        });
+
+        const overlaySlider_angle_lo = document.getElementById('overlaySlider_angle_lo');
+        const overlayText_angle_lo = document.getElementById('overlayText_angle_lo');
+        overlaySlider_angle_lo.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_angle_lo.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngSwing) {
+              Module._JntAngSwing(numericValue);
            }
         });
 
@@ -933,8 +1086,9 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_machine_pos_y.textContent = yVal + " m";
 
            // Call the WASM module with both coordinates
-           if (typeof Module !== 'undefined' && Module._set_machine_pos) {
-              Module._set_machine_pos(xVal, yVal, 0.5);
+           if (typeof Module !== 'undefined' && Module._MachPosnRelEasting && Module._MachPosnRelNorthing) {
+              Module._MachPosnRelEasting(xVal);
+              Module._MachPosnRelNorthing(yVal);
            }
         }
 
