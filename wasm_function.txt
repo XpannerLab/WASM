@@ -1,0 +1,64 @@
+==============
+JntAngBodyRoll								(o)
+
+JntAngBodyPitch								(o)
+
+JntAngBodyToBoom			_set_angle_boom 	(o)
+
+JntAngBoomToBoom2			fixed to 0			(o)
+
+JntAngArmToBucket			_set_angle_bucket	(o)
+
+==============
+JntAngTilt					_set_angle_tilt		(o)
+
+JntAngBoom2ToArm			_set_angle_stick		(o)
+
+JntAngBoomSwing							(o)
+
+JntAngTrRot				_set_angle_rotate		(o)
+
+JngAngDozerBlade			_set_angle_lift		(o)
+==============
+
+MachPosnRelNorthing			_set_machine_pos(y)	(o)
+
+MachPosnRelEasting			_set_machine_pos(x)	(o)
+
+MachPosnRelHeight			_set_machine_pos(z)	(o)
+
+MachPosnUppHeading			_set_angle_cabin		(o)
+
+(x)MachPosnSwAlignErr
+JntAngSwing								(o)
+==============
+
+ErrPanelTargetNorthing		_set_target_distance
+ErrPanelTargetEasting			_set_target_distance
+ErrPanelTargetHeight			_set_target_distance
+
+ErrPanelTargetHeading
+ErrPanelTargetTiltLong
+ErrPanelTargetTiltLat
+==============
+
+ErrTrvlTargetLong
+ErrTrvlTargetLat
+ErrSwTargetAngle
+
+==============
+
+AutoCtrlTarPanlID
+
+
+==============
+void add_char_to_string_buffer(char value);
+void open_db();
+
+void set_target_panel_id(int id_current, int id_next);
+
+void set_vtx_grid_unit_size(float value);
+void set_info_grid_unit_size(float value);
+void set_view_range(float value);
+void set_info_radius(float value);
+==============
