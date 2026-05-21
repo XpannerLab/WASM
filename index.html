@@ -816,10 +816,47 @@ div.emscripten_border { border: 1px solid black; }
            window.dispatchEvent(openFileEvent);
         });
 
+        // Explicitly attach the function to the global window object
+        //window.some_function = function (param) {
+        //   console.log("some_function was successfully called from C++!"+param);
+        //};
+
+        //================================
+        window.on_websocket_open = function () {
+           //===========
+           // modify below
+           console.log("on_websocket_open()");
+           //===========
+        };
+        window.on_websocket_closed = function () {
+           //===========
+           // modify below
+           console.log("on_websocket_closed()");
+           //===========
+        };
+        //================================
+
+        //================================
+        window.open_db = function (param) {
+           // Syntax: Module.ccall('func_name', 'return_type', ['argument_types'], [arguments])
+           Module.ccall(
+              'open_db',    // C++ function name
+              null,           // Return type (void is null)
+              ['string'],     // Argument types
+              [param]         // The actual JS string variable
+           );
+        };
+        //================================
+
         // Event listener
         window.addEventListener('openFileRequested', function (e) {
+            //================================
+            open_db(e.detail.filePath);
+            //================================
+/*
            if (typeof Module !== 'undefined' && Module._add_char_to_string_buffer && Module._open_db) {
               const filePath = e.detail.filePath;
+
 
               // Convert the string into standard characters/bytes
               const encoder      = new TextEncoder();
@@ -836,6 +873,7 @@ div.emscripten_border { border: 1px solid black; }
               //Module._open_db(e.detail.filePath);
               //console.log("Opening short-path file:", e.detail.filePath);
            }
+*/
         });
 
         const combinedForm = document.getElementById('combinedPanelForm');
