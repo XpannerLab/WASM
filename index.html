@@ -272,10 +272,10 @@ div.emscripten_border { border: 1px solid black; }
                  </div>
 
                  <!--<div id="slider_grid_unit_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-      <span style="min-width: 90px;">Grid Size</span>
-      <input type="range" id="overlaySlider_grid_unit_count" min="2" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
-      <span id="overlayText_grid_unit_count" style="min-width: 30px;">2x2</span>
-   </div>-->
+                 <span style="min-width: 90px;">Grid Size</span>
+                 <input type="range" id="overlaySlider_grid_unit_count" min="2" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
+                 <span id="overlayText_grid_unit_count" style="min-width: 30px;">2x2</span>
+                 </div>-->
 
                  <div id="slider_view_range" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">View Range</span>
@@ -301,11 +301,11 @@ div.emscripten_border { border: 1px solid black; }
 
                     <!-- Row 1 -->
                     <label for="targetPanelId" style="white-space: nowrap; grid-column: 1;">Target Panel:</label>
-                    <input type="number" id="targetPanelId" name="targetPanelId" step="1" min="0" placeholder="123" value ="271" style="width: 80px; padding: 4px; grid-column: 2;">
+                    <input type="number" id="targetPanelId" name="targetPanelId" step="1" min="-1" placeholder="123" value ="271" style="width: 80px; padding: 4px; grid-column: 2;">
 
                     <!-- Row 2 -->
                     <label for="nextPanelId" style="white-space: nowrap; grid-column: 1;">Next Panel:</label>
-                    <input type="number" id="nextPanelId" name="nextPanelId" step="1" min="0" placeholder="456" value ="38" style="width: 80px; padding: 4px; grid-column: 2;">
+                    <input type="number" id="nextPanelId" name="nextPanelId" step="1" min="-1" placeholder="456" value ="38" style="width: 80px; padding: 4px; grid-column: 2;">
 
                     <!-- Row 3: Spans across both columns to sit cleanly at the bottom -->
                     <div style="grid-column: 1 / span 2; margin-top: 5px;">
@@ -514,6 +514,12 @@ div.emscripten_border { border: 1px solid black; }
                     <input type="checkbox" id="overlayCheckbox_output">
                     Output
                  </label>
+
+                 <div id="slider_compass" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Comapass</span>
+                    <input type="range" id="overlaySlider_compass" min="0.0" max="0.5" step="0.01" value="0.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_compass" style="min-width: 30px;">0</span>
+                 </div>
               </div>
            </div>
 
@@ -576,6 +582,15 @@ div.emscripten_border { border: 1px solid black; }
 
            <label for="idColorPanel" style="text-align: left;">Panel</label>
            <input type="color" id="idColorPanel" value="#ffffff">
+
+           <label for="idColorPanelIntalled" style="text-align: left;">Panel Inst.</label>
+           <input type="color" id="idColorPanelIntalled" value="#66E2A0">
+
+           <label for="idColorPanelTarget" style="text-align: left;">Panel Targ.</label>
+           <input type="color" id="idColorPanelTarget" value="#0F62FE">
+
+           <label for="idColorPanelNext" style="text-align: left;">Panel Next</label>
+           <input type="color" id="idColorPanelNext" value="#A7C9FE">
 
            <label for="idColorPile" style="text-align: left;">Pile</label>
            <input type="color" id="idColorPile" value="#ffffff">
@@ -906,8 +921,8 @@ div.emscripten_border { border: 1px solid black; }
 
         // --- Listening for the combined event ---
         window.addEventListener('panelsUpdated', function (e) {
-           if (typeof Module !== 'undefined' && Module._set_target_panel_id) {
-              Module._set_target_panel_id(e.detail.targetId, e.detail.nextId);
+           if (typeof Module !== 'undefined' && Module._set_target_and_next_panel_id) {
+              Module._set_target_and_next_panel_id(e.detail.targetId, e.detail.nextId);
            }
         });
         /*
@@ -1070,8 +1085,8 @@ div.emscripten_border { border: 1px solid black; }
            overlayText_heading.textContent = value + "°"; // update text next to slider
 
            const numericValue = parseFloat(value);
-           if (typeof Module !== 'undefined' && Module._MachPosnUppHeading) {
-              Module._MachPosnUppHeading(numericValue);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyYaw) {
+              Module._JntAngBodyYaw(numericValue);
            }
         });
         const overlaySlider_pitch = document.getElementById('overlaySlider_pitch');
@@ -1377,6 +1392,20 @@ div.emscripten_border { border: 1px solid black; }
            }
         });
 
+        const overlaySlider_compass = document.getElementById('overlaySlider_compass');
+        const overlayText_compass = document.getElementById('overlayText_compass');
+        overlaySlider_compass.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_compass.textContent = value; // update text next to slider
+
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_compass) {
+              Module._set_compass(0.1, 0.0, numericValue);
+              Module._update_viewports();
+           }
+        });
+
         //================================
         // Shader
         //================================
@@ -1506,6 +1535,40 @@ div.emscripten_border { border: 1px solid black; }
               }
            }
         });
+        const color_PanelInstalled = document.getElementById('idColorPanelIntalled');
+        color_PanelInstalled.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_installed) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_installed(colorInt);
+              }
+           }
+        });
+        const color_PanelTarget = document.getElementById('idColorPanelTarget');
+        color_PanelTarget.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_target) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_target(colorInt);
+              }
+           }
+        });
+        const color_PanelNext = document.getElementById('idColorPanelNext');
+        color_PanelNext.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_next) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_next(colorInt);
+              }
+           }
+        });
+
         const color_Pile = document.getElementById('idColorPile');
         color_Pile.addEventListener('input', (event) => {
            const target = event.target;
