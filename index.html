@@ -167,7 +167,8 @@ div.emscripten_border { border: 1px solid black; }
            <!-------------------------------------->
            <!--Panel-->
            <!-------------------------------------->
-           <div id="panel_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+
+           <!--<div id="panel_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
               <button id="btn_toggle_panel"
                       style="width: 100%; cursor: pointer;
                            background: var(--group_button_color);
@@ -179,15 +180,15 @@ div.emscripten_border { border: 1px solid black; }
               <div id="panel_group" style="display: none; flex-direction: column; gap: 12px; padding: 15px;
                                     background: var(--group_color); color: green; font-weight: bold; font-size: 14px; ">
                  <div id="slider_row_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                    <span style="min-width: 90px;">Row Count</span>
+                    <span style="min-width: 90px;">Row Count</span>-->
                     <!--       <input type="range" id="overlaySlider_row_count" min="1" max="101" step="2" value="1" style="width: 150px; cursor: pointer;">-->
-                    <input type="range" id="overlaySlider_row_count" min="1" max="201" step="2" value="1" style="width: 150px; cursor: pointer;">
+                    <!--<input type="range" id="overlaySlider_row_count" min="1" max="201" step="2" value="1" style="width: 150px; cursor: pointer;">
                     <span id="overlayText_row_count" style="min-width: 30px;">1</span>
                  </div>
                  <div id="slider_panel_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                    <span style="min-width: 90px;">Panel Count</span>
+                    <span style="min-width: 90px;">Panel Count</span>-->
                     <!--            <input type="range" id="overlaySlider_panel_count" min="0" max="600" value="0" style="width: 150px; cursor: pointer;">-->
-                    <input type="range" id="overlaySlider_panel_count" min="0" max="1200" value="5" style="width: 150px; cursor: pointer;">
+                    <!--<input type="range" id="overlaySlider_panel_count" min="0" max="1200" value="5" style="width: 150px; cursor: pointer;">
                     <span id="overlayText_panel_count" style="min-width: 30px;">5</span>
                  </div>
 
@@ -203,14 +204,14 @@ div.emscripten_border { border: 1px solid black; }
                     <span id="overlayText_panel_space" style="min-width: 30px;">6.0 m</span>
                  </div>
 
-                 <label>
+                 <label>-->
                     <!--                    <input type="checkbox" id="overlayCheckbox_show_panels" checked>-->
-                    <input type="checkbox" id="overlayCheckbox_show_panels">
+                    <!--<input type="checkbox" id="overlayCheckbox_show_panels">
                     Show Panels
                  </label>
 
               </div>
-           </div>
+           </div>-->
 
            <!-------------------------------------->
            <!--DB-->
@@ -330,17 +331,47 @@ div.emscripten_border { border: 1px solid black; }
               <div id="machine_group" style="display: flex; flex-direction: column; gap: 12px; padding: 15px;
                                        background: var(--group_color); color: green; font-weight: bold; font-size: 14px;">
 
-                 <div id="slider_base_x" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                    <span style="min-width: 90px;">Pos X</span>
-                    <input type="range" id="overlaySlider_machine_pos_x" min="-50.0" max="50.0" step="0.1" value="2.35" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_machine_pos_x" style="min-width: 30px;">2.35 m</span>
+                 <!--<div id="slider_base_x" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+      <span style="min-width: 90px;">Pos X Offset</span>
+      <input type="range" id="overlaySlider_machine_pos_x_offset" min="-50.0" max="50.0" step="0.1" value="2.35" style="width: 150px; cursor: pointer;">
+      <span id="overlayText_machine_pos_x_offset" style="min-width: 30px;">2.35 m</span>
+   </div>-->
+
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>Pos X</span>
+                    <input type="number" id="overlayEdit_machine_x" value="0" step="0.1"
+                           style="width: 75px; height: 24px; padding: 2px 4px; border: 1px solid green; border-radius: 3px;
+                    background: #fff; color: #000; font-size: 14px; outline: none; text-align: right;">
+                    <span style="font-size: 12px; font-weight: normal;">m</span>
+                 </div>
+
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>Pos Y</span>
+                    <input type="number" id="overlayEdit_machine_y" value="0" step="0.1"
+                           style="width: 75px; height: 24px; padding: 2px 4px; border: 1px solid green; border-radius: 3px;
+                    background: #fff; color: #000; font-size: 14px; outline: none; text-align: right;">
+                    <span style="font-size: 12px; font-weight: normal;">m</span>
+                 </div>
+
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>Pos Z</span>
+                    <input type="number" id="overlayEdit_machine_z" value="1245.0" step="0.1"
+                           style="width: 75px; height: 24px; padding: 2px 4px; border: 1px solid green; border-radius: 3px;
+                    background: #fff; color: #000; font-size: 14px; outline: none; text-align: right;">
+                    <span style="font-size: 12px; font-weight: normal;">m</span>
+                 </div>
+
+                 <!--<div id="slider_base_x" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Pos X Offset</span>
+                    <input type="range" id="overlaySlider_machine_pos_x_offset" min="-50.0" max="50.0" step="0.1" value="2.35" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_x_offset" style="min-width: 30px;">2.35 m</span>
                  </div>
 
                  <div id="slider_base_y" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                    <span style="min-width: 90px;">Pos Y</span>
-                    <input type="range" id="overlaySlider_machine_pos_y" min="-50.0" max="50.0" step="0.1" value="6.0" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_machine_pos_y" style="min-width: 30px;">6.0 m</span>
-                 </div>
+                    <span style="min-width: 90px;">Pos Y Offset</span>
+                    <input type="range" id="overlaySlider_machine_pos_y_offset" min="-50.0" max="50.0" step="0.1" value="6.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_y_offset" style="min-width: 30px;">6.0 m</span>
+                 </div>-->
 
                  <div id="slider_lift" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Lift</span>
@@ -418,7 +449,8 @@ div.emscripten_border { border: 1px solid black; }
                  </label>
 
                  <label>
-                    <input type="checkbox" id="overlayCheckbox_control" checked>
+                    <!--<input type="checkbox" id="overlayCheckbox_control" checked>-->
+                    <input type="checkbox" id="overlayCheckbox_control">
                     Control
                  </label>
                  <!--Checkbox-->
@@ -493,7 +525,7 @@ div.emscripten_border { border: 1px solid black; }
                     <span id="overlayText_view_count" style="min-width: 30px;">1</span>
                  </div>
 
-                 <div id="slider_arrow_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                 <!--<div id="slider_arrow_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Arrow Count</span>
                     <input type="range" id="overlaySlider_arrow_count" min="0" max="200" step="1" value="0" style="width: 150px; cursor: pointer;">
                     <span id="overlayText_arrow_count" style="min-width: 30px;">0</span>
@@ -503,7 +535,7 @@ div.emscripten_border { border: 1px solid black; }
                     <span style="min-width: 90px;">Arrow Dir</span>
                     <input type="range" id="overlaySlider_arrow_dir" min="-3.0" max="3.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
                     <span id="overlayText_arrow_dir" style="min-width: 30px;">0.0</span>
-                 </div>
+                 </div>-->
 
                  <label>
                     <input type="checkbox" id="overlayCheckbox_perspective">
@@ -611,6 +643,7 @@ div.emscripten_border { border: 1px solid black; }
         //================================
         // Panel
         //================================
+        /*
         const panelGroup = document.getElementById('panel_group');
         const btnTogglePanel = document.getElementById('btn_toggle_panel');
 
@@ -690,6 +723,7 @@ div.emscripten_border { border: 1px solid black; }
               Module._show_panels(isEnabled);
            }
         });
+        */
 
         //================================
         // DataBase
@@ -1124,20 +1158,70 @@ div.emscripten_border { border: 1px solid black; }
            }
         });
 
-        const overlaySlider_machine_pos_x = document.getElementById('overlaySlider_machine_pos_x');
-        const overlayText_machine_pos_x = document.getElementById('overlayText_machine_pos_x');
+        // 1. DOM 요소 참조
+        const editX = document.getElementById('overlayEdit_machine_x');
+        const editY = document.getElementById('overlayEdit_machine_y');
+        const editZ = document.getElementById('overlayEdit_machine_z');
 
-        const overlaySlider_machine_pos_y = document.getElementById('overlaySlider_machine_pos_y');
-        const overlayText_machine_pos_y = document.getElementById('overlayText_machine_pos_y');
+        /**
+         * X 값을 읽어서 Module 함수 호출
+         */
+        function updateMachX() {
+           const xVal = parseFloat(editX.value);
+           if (!isNaN(xVal)) {
+              Module._MachPosnRelEasting(xVal);
+              console.log(`Easting 호출: ${xVal}`);
+           }
+        }
+
+        /**
+         * Y 값을 읽어서 Module 함수 호출
+         */
+        function updateMachY() {
+           const yVal = parseFloat(editY.value);
+           if (!isNaN(yVal)) {
+              Module._MachPosnRelNorthing(yVal);
+              console.log(`Northing 호출: ${yVal}`);
+           }
+        }
+
+        /**
+         * Z 값을 읽어서 Module 함수 호출
+         */
+        function updateMachZ() {
+           const zVal = parseFloat(editZ.value);
+           if (!isNaN(zVal)) {
+              Module._MachPosnRelHeight(zVal);
+              console.log(`Height 호출: ${zVal}`);
+           }
+        }
+
+        // 2. 이벤트 리스너 등록
+
+        // 값이 바뀔 때마다 즉시 반영하고 싶을 때 (추천)
+        editX.addEventListener('input', updateMachX);
+        editY.addEventListener('input', updateMachY);
+        editZ.addEventListener('input', updateMachZ);
+
+        // 또는, 포커스가 나갈 때(Blur)나 엔터키를 쳤을 때만 반영하고 싶을 때
+        // editX.addEventListener('change', updateMachX);
+        // editY.addEventListener('change', updateMachY);
+
+        /*
+        const overlaySlider_machine_pos_x_offset = document.getElementById('overlaySlider_machine_pos_x_offset');
+        const overlayText_machine_pos_x_offset = document.getElementById('overlayText_machine_pos_x_offset');
+
+        const overlaySlider_machine_pos_y_offset = document.getElementById('overlaySlider_machine_pos_y_offset');
+        const overlayText_machine_pos_y_offset = document.getElementById('overlayText_machine_pos_y_offset');
 
         // Create a reusable function to update the module
         function updateMachinePosition() {
-           const xVal = parseFloat(overlaySlider_machine_pos_x.value);
-           const yVal = parseFloat(overlaySlider_machine_pos_y.value);
+           const xVal = parseFloat(overlaySlider_machine_pos_x_offset.value);
+           const yVal = parseFloat(overlaySlider_machine_pos_y_offset.value);
 
            // Update the UI labels
-           overlayText_machine_pos_x.textContent = xVal + " m";
-           overlayText_machine_pos_y.textContent = yVal + " m";
+           overlayText_machine_pos_x_offset.textContent = xVal + " m";
+           overlayText_machine_pos_y_offset.textContent = yVal + " m";
 
            // Call the WASM module with both coordinates
            if (typeof Module !== 'undefined' && Module._MachPosnRelEasting && Module._MachPosnRelNorthing) {
@@ -1147,8 +1231,9 @@ div.emscripten_border { border: 1px solid black; }
         }
 
         // Attach the same function to both listeners
-        overlaySlider_machine_pos_x.addEventListener('input', updateMachinePosition);
-        overlaySlider_machine_pos_y.addEventListener('input', updateMachinePosition);
+        overlaySlider_machine_pos_x_offset.addEventListener('input', updateMachinePosition);
+        overlaySlider_machine_pos_y_offset.addEventListener('input', updateMachinePosition);
+        */
 
         const overlaySlider_target_distance = document.getElementById('overlaySlider_target_distance');
         const overlayText_target_distance = document.getElementById('overlayText_target_distance');
@@ -1360,14 +1445,15 @@ div.emscripten_border { border: 1px solid black; }
                     overlayText_view_mode.textContent = "place";
                     _set_place_mode();
                     break;
-                 case 3:
-                    overlayText_view_mode.textContent = "return";
-                    _set_return_mode();
-                    break;
+              //   case 3:
+              //      overlayText_view_mode.textContent = "return";
+              //      _set_return_mode();
+              //      break;
               }
            }
         });
 
+        /*
         const overlaySlider_arrow_count = document.getElementById('overlaySlider_arrow_count');
         const overlayText_arrow_count = document.getElementById('overlayText_arrow_count');
         overlaySlider_arrow_count.addEventListener('input', (event) => {
@@ -1391,6 +1477,7 @@ div.emscripten_border { border: 1px solid black; }
               Module._set_arrow_dir(numericValue);
            }
         });
+        */
 
         const overlaySlider_compass = document.getElementById('overlaySlider_compass');
         const overlayText_compass = document.getElementById('overlayText_compass');
