@@ -262,7 +262,6 @@ div.emscripten_border { border: 1px solid black; }
                         line-height: 1;">
                        📂
                     </label>
-                    <!--                  <input type="file" id="db_file_input" style="display: none;" accept=".db, .sqlite, .sqlite3">-->
                     <input type="file" id="db_file_input" style="display: none;" accept=".txt, .db, .sqlite, .sqlite3">
                  </div>
 
@@ -272,12 +271,6 @@ div.emscripten_border { border: 1px solid black; }
                     <span id="overlayText_grid_unit_size" style="min-width: 30px;">20m</span>
                  </div>
 
-                 <!--<div id="slider_grid_unit_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
-                 <span style="min-width: 90px;">Grid Size</span>
-                 <input type="range" id="overlaySlider_grid_unit_count" min="2" max="5" step="1" value="2" style="width: 150px; cursor: pointer;">
-                 <span id="overlayText_grid_unit_count" style="min-width: 30px;">2x2</span>
-                 </div>-->
-
                  <div id="slider_view_range" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">View Range</span>
                     <input type="range" id="overlaySlider_view_range" min="10" max="30" step="1" value="10" style="width: 150px; cursor: pointer;">
@@ -285,36 +278,32 @@ div.emscripten_border { border: 1px solid black; }
                  </div>
 
                  <form id="filePathForm" onsubmit="event.preventDefault();" style="display: flex; flex-direction: row; align-items: center; gap: 10px; font-family: sans-serif;">
+                    <label for="filePathInput" style="white-space: nowrap;">File:</label>
 
-                    <label for="filePathInput" style="white-space: nowrap;">File Path:</label>
+                    <!-- Changed width to 200px for a shorter text box -->
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+                    <input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_false_removed.db" style="width: 200px; padding: 4px; box-sizing: border-box;">
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\sqlite_db\Xpanner_Connect_Depcom\Xpanner_Connect_Depcom.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_가나다라.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\sqlite_db\download_OneDrive_2026-05-14\Xpanner_Connect_Depcom.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
 
-                    <!-- Changed width to 150px for a shorter text box -->
-                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block.db" style="width: 150px; padding: 4px; box-sizing: border-box;">-->
-                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_false_removed.db" style="width: 150px; padding: 4px; box-sizing: border-box;">-->
-                    <input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\sqlite_db\Xpanner_Connect_Depcom\Xpanner_Connect_Depcom.db" style="width: 150px; padding: 4px; box-sizing: border-box;">
-                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_가나다라.db" style="width: 150px; padding: 4px; box-sizing: border-box;">-->
-                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\sqlite_db\download_OneDrive_2026-05-14\Xpanner_Connect_Depcom.db" style="width: 150px; padding: 4px; box-sizing: border-box;">-->
-
-                    <input type="submit" value="Open" style="padding: 4px 14px; cursor: pointer;">
+                    <input type="submit" value="Open" style="width: 50px; height: 28px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                  </form>
 
-                 <!-- Changing to grid creates a clean, aligned vertical layout -->
-                 <form id="combinedPanelForm" onsubmit="event.preventDefault();" style="display: grid; grid-template-columns: auto 1fr; gap: 10px; max-width: 250px; font-family: sans-serif; align-items: center;">
+                 <form id="combinedPanelForm" onsubmit="event.preventDefault();"
+                       style="display: grid; grid-template-columns: auto auto auto; gap: 10px; max-width: 350px; font-family: sans-serif; align-items: center;">
 
-                    <!-- Row 1 -->
                     <label for="targetPanelId" style="white-space: nowrap; grid-column: 1;">Target Panel:</label>
-                    <input type="number" id="targetPanelId" name="targetPanelId" step="1" min="-1" placeholder="123" value ="271" style="width: 80px; padding: 4px; grid-column: 2;">
+                    <input type="number" id="targetPanelId" name="targetPanelId" step="1" min="-1" placeholder="123" value="271"
+                           style="width: 80px; padding: 4px; grid-column: 2;">
 
-                    <!-- Row 2 -->
                     <label for="nextPanelId" style="white-space: nowrap; grid-column: 1;">Next Panel:</label>
-                    <input type="number" id="nextPanelId" name="nextPanelId" step="1" min="-1" placeholder="456" value ="38" style="width: 80px; padding: 4px; grid-column: 2;">
+                    <input type="number" id="nextPanelId" name="nextPanelId" step="1" min="-1" placeholder="456" value="38"
+                           style="width: 80px; padding: 4px; grid-column: 2;">
 
-                    <!-- Row 3: Spans across both columns to sit cleanly at the bottom -->
-                    <div style="grid-column: 1 / span 2; margin-top: 5px;">
-                       <input type="submit" value="Set Panels" style="padding: 4px 12px; cursor: pointer; width: 100%;">
-                    </div>
+                    <input type="submit" value="Set"
+                           style="grid-column: 3; grid-row: 1 / span 2; height: 100%; padding: 4px 12px; cursor: pointer;">
                  </form>
-
               </div>
            </div>
 
