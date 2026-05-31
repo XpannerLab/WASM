@@ -6169,8 +6169,6 @@ async function createWasm() {
       GLctx.currentElementArrayBufferBinding = ibo ? (ibo.name | 0) : 0;
     };
 
-  var _glBlendFunc = (x0, x1) => GLctx.blendFunc(x0, x1);
-
   var _glBufferData = (target, size, data, usage) => {
   
       if (true) {
@@ -6854,12 +6852,6 @@ async function createWasm() {
     };
 
   
-  var _glUniform2fv = (location, count, value) => {
-  
-      count && GLctx.uniform2fv(webglGetUniformLocation(location), HEAPF32, ((value)>>2), count*2);
-    };
-
-  
   var _glUniform4fv = (location, count, value) => {
   
       count && GLctx.uniform4fv(webglGetUniformLocation(location), HEAPF32, ((value)>>2), count*4);
@@ -6869,12 +6861,6 @@ async function createWasm() {
       program = GL.programs[program];
   
       GLctx.uniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
-    };
-
-  
-  var _glUniformMatrix4fv = (location, count, transpose, value) => {
-  
-      count && GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, HEAPF32, ((value)>>2), count*16);
     };
 
   var _glUseProgram = (program) => {
@@ -7704,8 +7690,8 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var ASM_CONSTS = {
-  10023347: () => { on_websocket_open(); },  
- 10023372: () => { on_websocket_closed(); }
+  10023011: () => { on_websocket_open(); },  
+ 10023036: () => { on_websocket_closed(); }
 };
 function get_window_size(width,height) { var w = window.innerWidth; var h = window.innerHeight; setValue(width, w, 'double'); setValue(height, h, 'double'); }
 
@@ -7957,8 +7943,6 @@ var wasmImports = {
   /** @export */
   glBindVertexArray: _glBindVertexArray,
   /** @export */
-  glBlendFunc: _glBlendFunc,
-  /** @export */
   glBufferData: _glBufferData,
   /** @export */
   glBufferSubData: _glBufferSubData,
@@ -8043,13 +8027,9 @@ var wasmImports = {
   /** @export */
   glUniform2f: _glUniform2f,
   /** @export */
-  glUniform2fv: _glUniform2fv,
-  /** @export */
   glUniform4fv: _glUniform4fv,
   /** @export */
   glUniformBlockBinding: _glUniformBlockBinding,
-  /** @export */
-  glUniformMatrix4fv: _glUniformMatrix4fv,
   /** @export */
   glUseProgram: _glUseProgram,
   /** @export */
