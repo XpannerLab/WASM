@@ -6169,6 +6169,8 @@ async function createWasm() {
       GLctx.currentElementArrayBufferBinding = ibo ? (ibo.name | 0) : 0;
     };
 
+  var _glBlendFunc = (x0, x1) => GLctx.blendFunc(x0, x1);
+
   var _glBufferData = (target, size, data, usage) => {
   
       if (true) {
@@ -6282,11 +6284,19 @@ async function createWasm() {
       }
     };
 
+  var _glDepthFunc = (x0) => GLctx.depthFunc(x0);
+
   var _glDepthMask = (flag) => {
       GLctx.depthMask(!!flag);
     };
 
   var _glDisable = (x0) => GLctx.disable(x0);
+
+  var _glDisableVertexAttribArray = (index) => {
+      var cb = GL.currentContext.clientBuffers[index];
+      cb.enabled = false;
+      GLctx.disableVertexAttribArray(index);
+    };
 
   var _glDrawArrays = (mode, first, count) => {
       // bind any client-side buffers
@@ -6844,6 +6854,12 @@ async function createWasm() {
     };
 
   
+  var _glUniform2fv = (location, count, value) => {
+  
+      count && GLctx.uniform2fv(webglGetUniformLocation(location), HEAPF32, ((value)>>2), count*2);
+    };
+
+  
   var _glUniform4fv = (location, count, value) => {
   
       count && GLctx.uniform4fv(webglGetUniformLocation(location), HEAPF32, ((value)>>2), count*4);
@@ -6855,12 +6871,23 @@ async function createWasm() {
       GLctx.uniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
     };
 
+  
+  var _glUniformMatrix4fv = (location, count, transpose, value) => {
+  
+      count && GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, HEAPF32, ((value)>>2), count*16);
+    };
+
   var _glUseProgram = (program) => {
       program = GL.programs[program];
       GLctx.useProgram(program);
       // Record the currently active program so that we can access the uniform
       // mapping table of that program.
       GLctx.currentProgram = program;
+    };
+
+  var _glVertexAttrib3fv = (index, v) => {
+  
+      GLctx.vertexAttrib3f(index, HEAPF32[v>>2], HEAPF32[v+4>>2], HEAPF32[v+8>>2]);
     };
 
   var _glVertexAttribDivisor = (index, divisor) => {
@@ -7677,8 +7704,8 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var ASM_CONSTS = {
-  10023011: () => { on_websocket_open(); },  
- 10023036: () => { on_websocket_closed(); }
+  10023363: () => { on_websocket_open(); },  
+ 10023388: () => { on_websocket_closed(); }
 };
 function get_window_size(width,height) { var w = window.innerWidth; var h = window.innerHeight; setValue(width, w, 'double'); setValue(height, h, 'double'); }
 
@@ -7930,6 +7957,8 @@ var wasmImports = {
   /** @export */
   glBindVertexArray: _glBindVertexArray,
   /** @export */
+  glBlendFunc: _glBlendFunc,
+  /** @export */
   glBufferData: _glBufferData,
   /** @export */
   glBufferSubData: _glBufferSubData,
@@ -7956,9 +7985,13 @@ var wasmImports = {
   /** @export */
   glDeleteVertexArrays: _glDeleteVertexArrays,
   /** @export */
+  glDepthFunc: _glDepthFunc,
+  /** @export */
   glDepthMask: _glDepthMask,
   /** @export */
   glDisable: _glDisable,
+  /** @export */
+  glDisableVertexAttribArray: _glDisableVertexAttribArray,
   /** @export */
   glDrawArrays: _glDrawArrays,
   /** @export */
@@ -8010,11 +8043,17 @@ var wasmImports = {
   /** @export */
   glUniform2f: _glUniform2f,
   /** @export */
+  glUniform2fv: _glUniform2fv,
+  /** @export */
   glUniform4fv: _glUniform4fv,
   /** @export */
   glUniformBlockBinding: _glUniformBlockBinding,
   /** @export */
+  glUniformMatrix4fv: _glUniformMatrix4fv,
+  /** @export */
   glUseProgram: _glUseProgram,
+  /** @export */
+  glVertexAttrib3fv: _glVertexAttrib3fv,
   /** @export */
   glVertexAttribDivisor: _glVertexAttribDivisor,
   /** @export */
