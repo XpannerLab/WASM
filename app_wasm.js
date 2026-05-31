@@ -7704,8 +7704,8 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var ASM_CONSTS = {
-  10022963: () => { on_websocket_open(); },  
- 10022988: () => { on_websocket_closed(); }
+  10023347: () => { on_websocket_open(); },  
+ 10023372: () => { on_websocket_closed(); }
 };
 function get_window_size(width,height) { var w = window.innerWidth; var h = window.innerHeight; setValue(width, w, 'double'); setValue(height, h, 'double'); }
 
