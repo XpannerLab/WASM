@@ -6282,19 +6282,11 @@ async function createWasm() {
       }
     };
 
-  var _glDepthFunc = (x0) => GLctx.depthFunc(x0);
-
   var _glDepthMask = (flag) => {
       GLctx.depthMask(!!flag);
     };
 
   var _glDisable = (x0) => GLctx.disable(x0);
-
-  var _glDisableVertexAttribArray = (index) => {
-      var cb = GL.currentContext.clientBuffers[index];
-      cb.enabled = false;
-      GLctx.disableVertexAttribArray(index);
-    };
 
   var _glDrawArrays = (mode, first, count) => {
       // bind any client-side buffers
@@ -6869,11 +6861,6 @@ async function createWasm() {
       // Record the currently active program so that we can access the uniform
       // mapping table of that program.
       GLctx.currentProgram = program;
-    };
-
-  var _glVertexAttrib3fv = (index, v) => {
-  
-      GLctx.vertexAttrib3f(index, HEAPF32[v>>2], HEAPF32[v+4>>2], HEAPF32[v+8>>2]);
     };
 
   var _glVertexAttribDivisor = (index, divisor) => {
@@ -7969,13 +7956,9 @@ var wasmImports = {
   /** @export */
   glDeleteVertexArrays: _glDeleteVertexArrays,
   /** @export */
-  glDepthFunc: _glDepthFunc,
-  /** @export */
   glDepthMask: _glDepthMask,
   /** @export */
   glDisable: _glDisable,
-  /** @export */
-  glDisableVertexAttribArray: _glDisableVertexAttribArray,
   /** @export */
   glDrawArrays: _glDrawArrays,
   /** @export */
@@ -8032,8 +8015,6 @@ var wasmImports = {
   glUniformBlockBinding: _glUniformBlockBinding,
   /** @export */
   glUseProgram: _glUseProgram,
-  /** @export */
-  glVertexAttrib3fv: _glVertexAttrib3fv,
   /** @export */
   glVertexAttribDivisor: _glVertexAttribDivisor,
   /** @export */
