@@ -1,0 +1,1788 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Solar Panel Project</title>
+    <style>body {
+  font-family: arial;
+  margin: 0;
+  padding: none;
+}
+
+.emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+div.emscripten { text-align: center; }
+div.emscripten_border { border: 1px solid black; }
+/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+/*canvas.emscripten { border: 0px none; background-color: black; }*/
+       canvas.emscripten {
+          border: 0px none;
+          /*background-color: whtie;*/
+          background-color: black;
+          /*background-color: green;*/
+          /*opacity: 1.0;*/
+          /*alpha: true;*/
+          /*premultipliedAlpha: true;*/
+          /*alpha: false;*/
+          /*premultipliedAlpha: false;*/
+       }
+
+/*
+#company_logo {
+   display: inline-block;
+   margin: 0;
+   padding: 6px;
+   width: 265px;
+}
+
+.spinner {
+  height: 30px;
+  width: 30px;
+  margin: 0;
+  margin-top: 20px;
+  margin-left: 20px;
+  display: inline-block;
+  vertical-align: top;
+
+  -webkit-animation: rotation .8s linear infinite;
+  -moz-animation: rotation .8s linear infinite;
+  -o-animation: rotation .8s linear infinite;
+  animation: rotation 0.8s linear infinite;
+
+  border-left: 5px solid rgb(235, 235, 235);
+  border-right: 5px solid rgb(235, 235, 235);
+  border-bottom: 5px solid rgb(235, 235, 235);
+  border-top: 5px solid rgb(120, 120, 120);
+
+  border-radius: 100%;
+  background-color: rgb(189, 215, 46);
+}
+
+@-webkit-keyframes rotation {
+  from {-webkit-transform: rotate(0deg);}
+  to {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes rotation {
+  from {-moz-transform: rotate(0deg);}
+  to {-moz-transform: rotate(360deg);}
+}
+@-o-keyframes rotation {
+  from {-o-transform: rotate(0deg);}
+  to {-o-transform: rotate(360deg);}
+}
+@keyframes rotation {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+*/
+
+#status {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 30px;
+  margin-left: 20px;
+  font-weight: bold;
+  color: rgb(120, 120, 120);
+}
+
+#progress {
+  height: 20px;
+  width: 300px;
+}
+
+/*
+#controls {
+  display: inline-block;
+  float: right;
+  vertical-align: top;
+  margin-top: 30px;
+  margin-right: 20px;
+}
+*/
+
+#output {
+  width: 100%;
+  height: 200px;
+  margin: 0 auto;
+  margin-top: 10px;
+  border-left: 0px;
+  border-right: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  display: block;
+  background-color: black;
+  color: white;
+  font-family: 'Lucida Console', Monaco, monospace;
+  outline: none;
+}
+</style>
+
+  </head>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <body>
+     <!-- <a href="http://emscripten.org"><img id="company_logo" src="logo.png"></a>-->
+
+     <div class="spinner" id='spinner'></div>
+     <div class="emscripten" id="status">Downloading...</div>
+
+     <!--<span id='controls'>
+      <span><input type="checkbox" id="resize">Resize canvas</span>
+      <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
+      <span>
+         <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked,
+                                                                              document.getElementById('resize').checked)">
+      </span>
+   </span>-->
+
+     <div class="emscripten">
+        <progress value="0" max="100" id="progress" hidden=1></progress>
+     </div>
+
+     <div class="emscripten_border" style="position: relative; display: inline-block;">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+        <!--Button overlay-->
+        <!--<button id="overlayButton"
+        style="position: absolute; bottom: 0; left: 0; z-index: 10;"> Click Me
+        </button>-->
+        <!--<button id="overlayButton_origin"
+                style="position: absolute; bottom: 2.5%; left: 50%; transform: translateX(-50%);
+               /*z-index: 10; background-color: rgba(255, 0, 0, 0.25); border: none; color: white;*/
+               z-index: 10; background-color: rgba(255, 0, 0, 0.5); border: 2px solid black; color: white;
+               width: 60px; height: 60px; border-radius: 50%; cursor: pointer;">
+           Origin
+        </button>-->
+
+        <div id="controls_wrapper"
+             style="position: absolute; top: 10px; left: 10px; z-index: 10;
+               display: flex; flex-direction: column; gap: 12px;
+               --group_bg_color: rgba(0, 0, 0, 0.0);
+               --group_button_color: rgba(0, 0, 255, 0.1);
+               --group_border_color: rgba(255, 0, 0, 0.5);
+               --group_border_size: 1px;
+               --group_color: rgba(0, 0, 255, 0.0);
+               ">
+
+
+           <!-------------------------------------->
+           <!--Panel-->
+           <!-------------------------------------->
+
+           <!--<div id="panel_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+              <button id="btn_toggle_panel"
+                      style="width: 100%; cursor: pointer;
+                           background: var(--group_button_color);
+                           color: green;
+                           font-weight: bold; font-size: 16px;
+                           border: none; border-bottom: 1px solid green; padding: 8px; font-weight: bold; text-align: left; outline: none; ">
+                 ▶ Panel
+              </button>
+              <div id="panel_group" style="display: none; flex-direction: column; gap: 12px; padding: 15px;
+                                    background: var(--group_color); color: green; font-weight: bold; font-size: 14px; ">
+                 <div id="slider_row_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Row Count</span>-->
+                    <!--       <input type="range" id="overlaySlider_row_count" min="1" max="101" step="2" value="1" style="width: 150px; cursor: pointer;">-->
+                    <!--<input type="range" id="overlaySlider_row_count" min="1" max="201" step="2" value="1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_row_count" style="min-width: 30px;">1</span>
+                 </div>
+                 <div id="slider_panel_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Panel Count</span>-->
+                    <!--            <input type="range" id="overlaySlider_panel_count" min="0" max="600" value="0" style="width: 150px; cursor: pointer;">-->
+                    <!--<input type="range" id="overlaySlider_panel_count" min="0" max="1200" value="5" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_panel_count" style="min-width: 30px;">5</span>
+                 </div>
+
+                 <div id="slider_panel_height" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Panel Height</span>
+                    <input type="range" id="overlaySlider_panel_height" min="1.0" max="2.0" step="0.1" value="1.5" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_panel_height" style="min-width: 30px;">1.5 m</span>
+                 </div>
+
+                 <div id="slider_panel_space" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Panel Space</span>
+                    <input type="range" id="overlaySlider_panel_space" min="6.0" max="10.0" step="0.1" value="6.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_panel_space" style="min-width: 30px;">6.0 m</span>
+                 </div>
+
+                 <label>-->
+                    <!--                    <input type="checkbox" id="overlayCheckbox_show_panels" checked>-->
+                    <!--<input type="checkbox" id="overlayCheckbox_show_panels">
+                    Show Panels
+                 </label>
+
+              </div>
+           </div>-->
+
+           <!-------------------------------------->
+           <!--DB-->
+           <!-------------------------------------->
+           <div id="db_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+              <button id="btn_toggle_db"
+                      style="width: 100%; cursor: pointer;
+                           background: var(--group_button_color);
+                           color: green;
+                           font-weight: bold; font-size: 16px;
+                           border: none; border-bottom: 1px solid green; padding: 8px; font-weight: bold; text-align: left; outline: none; ">
+                 ▼ DataBase
+              </button>
+              <div id="db_group" style="display: flex; flex-direction: column; gap: 12px; padding: 15px;
+                                    background: var(--group_color); color: green; font-weight: bold; font-size: 14px; ">
+
+                 <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; width: 100%;">
+                    <span id="selected_filename" style="
+                        flex: 1;
+                        font-size: 12px;
+                        color: rgba(255, 0, 0, 1.0);
+                        font-weight: normal;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        /* Updated Border Color */
+                        border: 1px solid rgba(0, 0, 255, 1.0);
+                        border-radius: 4px;
+                        padding: 10px 8px; /* Adjusted to align with button height */
+                        background: rgba(255, 255, 255, 0.5);
+                  ">
+                       No file selected
+                    </span>
+
+                    <label for="db_file_input" style="
+                        cursor: pointer;
+                        flex-shrink: 0;
+                        width: 32px; height: 32px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: rgba(255, 255, 255, 0.5);
+                        /* Changed border color to red */
+                        border: 1px solid rgba(0, 0, 255, 1.0);
+                        border-radius: 4px;
+                        transition: 0.3s;
+                        font-size: 18px;
+                        line-height: 1;">
+                       📂
+                    </label>
+                    <input type="file" id="db_file_input" style="display: none;" accept=".txt, .db, .sqlite, .sqlite3">
+                 </div>
+
+                 <div id="slider_grid_unit_size" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Grid Unit</span>
+                    <input type="range" id="overlaySlider_grid_unit_size" min="10" max="50" step="1" value="20" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_grid_unit_size" style="min-width: 30px;">20m</span>
+                 </div>
+
+                 <div id="slider_view_range" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">View Range</span>
+                    <input type="range" id="overlaySlider_view_range" min="10" max="30" step="1" value="10" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_view_range" style="min-width: 30px;">10m</span>
+                 </div>
+
+                 <form id="filePathForm" onsubmit="event.preventDefault();" style="display: flex; flex-direction: row; align-items: center; gap: 10px; font-family: sans-serif;">
+                    <label for="filePathInput" style="white-space: nowrap;">File:</label>
+
+                    <!-- Changed width to 200px for a shorter text box -->
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+                    <input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_false_removed.db" style="width: 200px; padding: 4px; box-sizing: border-box;">
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\sqlite_db\Xpanner_Connect_Depcom\Xpanner_Connect_Depcom.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\code\apps\app\assets\DataBase\Xpanner_Connect_DEPCOM_one_block_가나다라.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+                    <!--<input type="text" id="filePathInput" name="filePathInput" placeholder="path/to/file" value="D:\work\sqlite_db\download_OneDrive_2026-05-14\Xpanner_Connect_Depcom.db" style="width: 200px; padding: 4px; box-sizing: border-box;">-->
+
+                    <input type="submit" value="Open" style="width: 50px; height: 28px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                 </form>
+
+                 <form id="combinedPanelForm" onsubmit="event.preventDefault();"
+                       style="display: grid; grid-template-columns: auto auto auto; gap: 10px; max-width: 350px; font-family: sans-serif; align-items: center;">
+
+                    <label for="targetPanelId" style="white-space: nowrap; grid-column: 1;">Target Panel:</label>
+                    <input type="number" id="targetPanelId" name="targetPanelId" step="1" min="-1" placeholder="123" value="271"
+                           style="width: 80px; padding: 4px; grid-column: 2;">
+
+                    <label for="nextPanelId" style="white-space: nowrap; grid-column: 1;">Next Panel:</label>
+                    <input type="number" id="nextPanelId" name="nextPanelId" step="1" min="-1" placeholder="456" value="38"
+                           style="width: 80px; padding: 4px; grid-column: 2;">
+
+                    <input type="submit" value="Set"
+                           style="grid-column: 3; grid-row: 1 / span 2; height: 100%; padding: 4px 12px; cursor: pointer;">
+                 </form>
+              </div>
+           </div>
+
+           <!-------------------------------------->
+           <!--Machine-->
+           <!-------------------------------------->
+           <div id="machine_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+              <button id="btn_toggle_machine"
+                      style="width: 100%; cursor: pointer;
+                           background: var(--group_button_color); color: green;
+                           font-weight: bold; font-size: 16px;
+                           border: none; border-bottom: 1px solid green; padding: 8px; font-weight: bold; text-align: left; outline: none; ">
+                 ▼ Machine
+              </button>
+              <div id="machine_group" style="display: flex; flex-direction: column; gap: 12px; padding: 15px;
+                                       background: var(--group_color); color: green; font-weight: bold; font-size: 14px;">
+
+                 <!--<div id="slider_base_x" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+      <span style="min-width: 90px;">Pos X Offset</span>
+      <input type="range" id="overlaySlider_machine_pos_x_offset" min="-50.0" max="50.0" step="0.1" value="2.35" style="width: 150px; cursor: pointer;">
+      <span id="overlayText_machine_pos_x_offset" style="min-width: 30px;">2.35 m</span>
+   </div>-->
+
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>Pos X</span>
+                    <input type="number" id="overlayEdit_machine_x" value="0" step="0.1"
+                           style="width: 75px; height: 24px; padding: 2px 4px; border: 1px solid green; border-radius: 3px;
+                    background: #fff; color: #000; font-size: 14px; outline: none; text-align: right;">
+                    <span style="font-size: 12px; font-weight: normal;">m</span>
+                 </div>
+
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>Pos Y</span>
+                    <input type="number" id="overlayEdit_machine_y" value="0" step="0.1"
+                           style="width: 75px; height: 24px; padding: 2px 4px; border: 1px solid green; border-radius: 3px;
+                    background: #fff; color: #000; font-size: 14px; outline: none; text-align: right;">
+                    <span style="font-size: 12px; font-weight: normal;">m</span>
+                 </div>
+
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>Pos Z</span>
+                    <input type="number" id="overlayEdit_machine_z" value="1245.0" step="0.1"
+                           style="width: 75px; height: 24px; padding: 2px 4px; border: 1px solid green; border-radius: 3px;
+                    background: #fff; color: #000; font-size: 14px; outline: none; text-align: right;">
+                    <span style="font-size: 12px; font-weight: normal;">m</span>
+                 </div>
+
+                 <!--<div id="slider_base_x" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Pos X Offset</span>
+                    <input type="range" id="overlaySlider_machine_pos_x_offset" min="-50.0" max="50.0" step="0.1" value="2.35" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_x_offset" style="min-width: 30px;">2.35 m</span>
+                 </div>
+
+                 <div id="slider_base_y" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Pos Y Offset</span>
+                    <input type="range" id="overlaySlider_machine_pos_y_offset" min="-50.0" max="50.0" step="0.1" value="6.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_machine_pos_y_offset" style="min-width: 30px;">6.0 m</span>
+                 </div>-->
+
+                 <div id="slider_lift" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Lift</span>
+                    <input type="range" id="overlaySlider_lift" min="-15" max="15" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_lift" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_heading" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Heading</span>
+                    <input type="range" id="overlaySlider_heading" min="-270" max="270" value="90" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_heading" style="min-width: 30px;">90°</span>
+                 </div>
+
+                 <div id="slider_pitch" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Pitch</span>
+                    <input type="range" id="overlaySlider_pitch" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_pitch" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_roll" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Roll</span>
+                    <input type="range" id="overlaySlider_roll" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_roll" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_angle_lo" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Frame Angle</span>
+                    <input type="range" id="overlaySlider_angle_lo" min="-270" max="270" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_angle_lo" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_boom_swing" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Boom Swing</span>
+                    <input type="range" id="overlaySlider_boom_swing" min="-70" max="80" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_boom_swing" style="min-width: 30px;">-0°</span>
+                 </div>
+                 <div id="slider_boom" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Boom</span>
+                    <input type="range" id="overlaySlider_boom" min="-80" max="45" value="-45" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_boom" style="min-width: 30px;">-45°</span>
+                 </div>
+
+                 <div id="slider_stick" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Stick</span>
+                    <input type="range" id="overlaySlider_stick" min="25" max="165" value="120" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_stick" style="min-width: 30px;">120°</span>
+                 </div>
+
+                 <div id="slider_bucket" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Bucket</span>
+                    <input type="range" id="overlaySlider_bucket" min="-45" max="135" value="24" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_bucket" style="min-width: 30px;">60°</span>
+                 </div>
+
+                 <div id="slider_tilt" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Tilt</span>
+                    <input type="range" id="overlaySlider_tilt" min="-35" max="35" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_tilt" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <div id="slider_rotate" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Rotate</span>
+                    <input type="range" id="overlaySlider_rotate" min="-180" max="180" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_rotate" style="min-width: 30px;">0°</span>
+                 </div>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_tiltrotator" checked>
+                    Tiltrotator
+                 </label>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_grab">
+                    Grab Panel
+                 </label>
+
+                 <label>
+                    <!--<input type="checkbox" id="overlayCheckbox_control" checked>-->
+                    <input type="checkbox" id="overlayCheckbox_control">
+                    Control
+                 </label>
+                 <!--Checkbox-->
+
+                 <div id="slider_view_mode" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">View Mode</span>
+                    <input type="range" id="overlayslider_view_mode" min="0" max="3" step="1" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_view_mode" style="min-width: 30px;">position</span>
+                 </div>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_auto_reset" checked>
+                    Auto Reset
+                 </label>
+
+                 <div id="slider_target_distance" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Distance</span>
+                    <input type="range" id="overlaySlider_target_distance" min="0" max="5" step="0.1" value="5" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_target_distance" style="min-width: 30px;">5 m</span>
+                 </div>
+
+                 <div id="slider_target_distance_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Threshold</span>
+                    <input type="range" id="overlaySlider_target_distance_threshold" min="0" max="5" step="0.1" value="1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_target_distance_threshold" style="min-width: 30px;">1 m</span>
+                 </div>
+              </div>
+           </div>
+
+           <!-------------------------------------->
+           <!--Features-->
+           <!-------------------------------------->
+           <div id="features_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+              <button id="btn_toggle_features"
+                      style="width: 100%; cursor: pointer;
+                           background: var(--group_button_color); color: green;
+                           font-weight: bold; font-size: 16px;
+                           border: none; border-bottom: 1px solid green; padding: 8px; font-weight: bold; text-align: left; outline: none; ">
+                 ▼ Features
+              </button>
+
+              <div id="features_group" style="display: flex; flex-direction: column; gap: 12px; padding: 15px;
+                                       background: var(--group_color); color: green; font-weight: bold; font-size: 14px;">
+
+                 <div id="slider_camera_target_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">ViewTargetZ</span>
+                    <input type="range" id="overlaySlider_camera_target_z" min="-5.0" max="5.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_camera_target_z" style="min-width: 30px;">0 m</span>
+                 </div>
+
+                 <div id="slider_camera_fov" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">View FOV</span>
+                    <input type="range" id="overlaySlider_camera_fov" min="5.0" max="100.0" step="1" value="50.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_camera_fov" style="min-width: 30px;">50°</span>
+                 </div>
+
+                 <div id="slider_camera_near_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Near Z</span>
+                    <input type="range" id="overlaySlider_camera_near_z" min="1.0" max="10.0" step="1" value="5.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_camera_near_z" style="min-width: 30px;">5 m</span>
+                 </div>
+
+                 <div id="slider_camera_far_z" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Far Z</span>
+                    <input type="range" id="overlaySlider_camera_far_z" min="10.0" max="1000.0" step="10" value="200.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_camera_far_z" style="min-width: 30px;">200 m</span>
+                 </div>
+
+                 <div id="slider_view_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">View Count</span>
+                    <input type="range" id="overlaySlider_view_count" min="1" max="3" step="1" value="1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_view_count" style="min-width: 30px;">1</span>
+                 </div>
+
+                 <!--<div id="slider_arrow_count" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Arrow Count</span>
+                    <input type="range" id="overlaySlider_arrow_count" min="0" max="200" step="1" value="0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_arrow_count" style="min-width: 30px;">0</span>
+                 </div>
+
+                 <div id="slider_arrow_dir" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Arrow Dir</span>
+                    <input type="range" id="overlaySlider_arrow_dir" min="-3.0" max="3.0" step="0.1" value="0.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_arrow_dir" style="min-width: 30px;">0.0</span>
+                 </div>-->
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_perspective">
+                    Perspective View
+                 </label>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_output">
+                    Output
+                 </label>
+
+                 <div id="slider_compass" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">Comapass</span>
+                    <input type="range" id="overlaySlider_compass" min="0.0" max="0.5" step="0.01" value="0.0" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_compass" style="min-width: 30px;">0</span>
+                 </div>
+              </div>
+           </div>
+
+           <!-------------------------------------->
+           <!--Shader-->
+           <!-------------------------------------->
+           <div id="shader_settings_container" style="border: var(--group_border_size) solid var(--group_border_color); border-radius: 4px; background: var(--group_bg_color); overflow: hidden; ">
+              <button id="btn_toggle_shader"
+                      style="width: 100%; cursor: pointer;
+                           background: var(--group_button_color); color: green;
+                           font-weight: bold; font-size: 16px;
+                           border: none; border-bottom: 1px solid green; padding: 8px; font-weight: bold; text-align: left; outline: none; ">
+                 ▶ Shader Settings
+              </button>
+
+              <div id="shader_settings_group" style="display: none; flex-direction: column; gap: 12px; padding: 15px;
+                                       background: var(--group_color); color: green; font-weight: bold; font-size: 14px;">
+                 <div id="slider_norm_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">n_threshold</span>
+                    <input type="range" id="overlaySlider_norm_threshold" min="0.0" max="0.5" step="0.01" value="0.1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_norm_threshold" style="min-width: 30px;">0.1</span>
+                 </div>
+                 <div id="slider_z_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">z_threshold</span>
+                    <input type="range" id="overlaySlider_z_threshold" min="0.0" max="1.0" step="0.01" value="0.1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_z_threshold" style="min-width: 30px;">0.1</span>
+                 </div>
+                 <div id="slider_z_norm_threshold" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">z_n_th</span>
+                    <input type="range" id="overlaySlider_z_norm_threshold" min="0.0" max="1.0" step="0.001" value="0.10" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_z_norm_threshold" style="min-width: 30px;">0.10</span>
+                 </div>
+                 <div id="slider_z_norm_threshold_scale" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">z_n_th_scl</span>
+                    <input type="range" id="overlaySlider_z_norm_threshold_scale" min="0.0" max="50.0" step="1.0" value="35" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_z_norm_threshold_scale" style="min-width: 30px;">35</span>
+                 </div>
+                 <div id="slider_outline_w" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
+                    <span style="min-width: 90px;">outline</span>
+                    <input type="range" id="overlaySlider_outline_w" min="1" max="5" step="1" value="1" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_outline_w" style="min-width: 30px;">1</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        <!-------------------------------------->
+        <!--Color-->
+        <!-------------------------------------->
+        <div style="position: absolute; top: 5%; right: 20px; z-index: 10;
+                     background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px;
+                     display: grid;
+                     grid-template-columns: 1fr auto; /* Text takes space, picker is auto-sized */
+                     align-items: center;
+                     column-gap: 10px; row-gap: 5px;
+                     color: green; font-weight: bold; font-family: sans-serif;">
+
+           <label for="idColorExcavator" style="text-align: left;">Excavator</label>
+           <input type="color" id="idColorExcavator" value="#ffffff">
+
+           <label for="idColorPanel" style="text-align: left;">Panel</label>
+           <input type="color" id="idColorPanel" value="#ffffff">
+
+           <label for="idColorPanelIntalled" style="text-align: left;">Panel Inst.</label>
+           <input type="color" id="idColorPanelIntalled" value="#66E2A0">
+
+           <label for="idColorPanelTarget" style="text-align: left;">Panel Targ.</label>
+           <input type="color" id="idColorPanelTarget" value="#0F62FE">
+
+           <label for="idColorPanelNext" style="text-align: left;">Panel Next</label>
+           <input type="color" id="idColorPanelNext" value="#A7C9FE">
+
+           <label for="idColorPile" style="text-align: left;">Pile</label>
+           <input type="color" id="idColorPile" value="#ffffff">
+
+           <label for="idColorOutline" style="text-align: left;">Outline</label>
+           <input type="color" id="idColorOutline" value="#000000">
+
+           <label for="idColorBG" style="text-align: left;">Background</label>
+           <input type="color" id="idColorBG" value="#ffffff">
+
+           <label for="idColorArrow" style="text-align: left;">Arrow</label>
+           <input type="color" id="idColorArrow" value="#c8ff00">
+        </div>
+     </div>
+
+     <script type="text/javascript">
+
+        //================================
+        // Panel
+        //================================
+        /*
+        const panelGroup = document.getElementById('panel_group');
+        const btnTogglePanel = document.getElementById('btn_toggle_panel');
+
+        btnTogglePanel.addEventListener('click', () => {
+           const isHidden = panelGroup.style.display === 'none';
+
+           if (isHidden) {
+              panelGroup.style.display = 'flex';
+              btnTogglePanel.textContent = '▼ Panel';
+              btnTogglePanel.style.borderBottom = '1px solid green'; // Add line back
+           } else {
+              panelGroup.style.display = 'none';
+              btnTogglePanel.textContent = '▶ Panel';
+              btnTogglePanel.style.borderBottom = 'none'; // Hide line when closed
+           }
+        });
+
+        const overlaySlider_row_count = document.getElementById('overlaySlider_row_count');
+        const overlayText_row_count = document.getElementById('overlayText_row_count');
+        overlaySlider_row_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_row_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_row_count) {
+              Module._set_row_count(numericValue);
+           }
+        });
+
+        const overlaySlider_panel_count = document.getElementById('overlaySlider_panel_count');
+        const overlayText_panel_count = document.getElementById('overlayText_panel_count');
+        overlaySlider_panel_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_panel_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_panel_count) {
+              Module._set_panel_count(numericValue);
+           }
+        });
+
+        const overlaySlider_panel_height = document.getElementById('overlaySlider_panel_height');
+        const overlayText_panel_height = document.getElementById('overlayText_panel_height');
+        overlaySlider_panel_height.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_panel_height.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_panel_height) {
+              Module._set_panel_height(numericValue);
+           }
+        });
+
+        const overlaySlider_panel_space = document.getElementById('overlaySlider_panel_space');
+        const overlayText_panel_space = document.getElementById('overlayText_panel_space');
+        overlaySlider_panel_space.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_panel_space.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_panel_space) {
+              Module._set_panel_space(numericValue);
+           }
+        });
+
+        const overlayCheckbox_show_panels = document.getElementById('overlayCheckbox_show_panels');
+        overlayCheckbox_show_panels.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Show Panels Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._show_panels) {
+              Module._show_panels(isEnabled);
+           }
+        });
+        */
+
+        //================================
+        // DataBase
+        //================================
+        const dbGroup = document.getElementById('db_group');
+        const btnToggleDB = document.getElementById('btn_toggle_db');
+
+        btnToggleDB.addEventListener('click', () => {
+           const isHidden = dbGroup.style.display === 'none';
+
+           if (isHidden) {
+              dbGroup.style.display = 'flex';
+              btnToggleDB.textContent = '▼ DataBase';
+              btnToggleDB.style.borderBottom = '1px solid green'; // Add line back
+           } else {
+              dbGroup.style.display = 'none';
+              btnToggleDB.textContent = '▶ DataBase';
+              btnToggleDB.style.borderBottom = 'none'; // Hide line when closed
+           }
+        });
+
+        // 1. Reference the elements
+        const dbFileInput = document.getElementById('db_file_input');
+        const selectedFilename = document.getElementById('selected_filename');
+
+        // 1. Define the global Module object BEFORE loading the JS file
+        var Module = {
+           //onRuntimeInitialized: function () {
+           //   console.log("WASM Runtime is fully initialized.");
+           //}
+        };
+
+        // --- GLOBAL SCOPE ---
+        let virtual_file_name = null; // Only the filename needs to be global to remember what to unlink
+
+        // 2. Listen for the 'change' event (triggered after user selects a file)
+        dbFileInput.addEventListener('change', function (e) {
+           // Get the first file from the list
+           const file = e.target.files[0];
+
+           //test_file_name
+           if (file) {
+              // Update the UI with the file name
+              selectedFilename.textContent = `${file.name}`;
+              selectedFilename.style.color = "black"; // Optional: change color to show success
+              //selectedFilename.style.color = "color: rgba(0, 0, 0, 1.0)";
+
+              // 1. CLEANUP PREVIOUS BUFFER
+              // We do this immediately when the user picks a new file
+              if (Module._close_db_local) {
+                 Module._close_db_local();
+              }
+              if (virtual_file_name !== null) {
+                 Module.FS.unlink(virtual_file_name);
+                 virtual_file_name = null;
+                 console.log("Old DB buffer freed from RAM.");
+              }
+
+              const reader = new FileReader();
+              reader.onload = function (event) {
+                 // 1. Convert file data to Uint8Array
+                 const data = new Uint8Array(event.target.result);
+
+                 // 2. Write file to Emscripten's Virtual File System
+                 // Use the ACTUAL filename from the user's computer
+                 // Update global with the new name
+                 virtual_file_name = file.name;
+
+                 Module.FS.writeFile(virtual_file_name, data);
+                 console.log("File written to Virtual FS");
+
+                 // 3. Allocate a string pointer for the filename
+                 const pathPtr = Module.allocateUTF8(virtual_file_name);
+
+                 // 4. Call the C++ function
+                 if (Module._open_db_local) {
+                    Module._open_db_local(pathPtr);
+                 }
+
+                 // 5. Clean up memory and virtual file
+                 // Cleanup the filename string pointer (C++ won't do this)
+                 Module._wasm_free(pathPtr);
+                 //Module.FS.unlink(virtual_file_name);
+
+                 // Reset the input so the same file can be selected again
+                 e.target.value = '';
+              };
+              //readAsArrayBuffer checks if 'file' object is picked from a dialog by the user
+              reader.readAsArrayBuffer(file);
+
+              //   reader.onloadend = function () {
+              //      // Clear the input value so selecting the same file triggers 'change' again
+              //      e.target.value = '';
+              //   };
+           } else {
+              // Handle case where user opens dialog but cancels
+              selectedFilename.textContent = "No file selected";
+              selectedFilename.style.color = "color: rgba(0, 0, 0, 1.0)";
+           }
+        });
+
+        const overlaySlider_grid_unit_size = document.getElementById('overlaySlider_grid_unit_size');
+        const overlayText_grid_unit_size = document.getElementById('overlayText_grid_unit_size');
+        overlaySlider_grid_unit_size.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_grid_unit_size.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_vtx_grid_unit_size) {
+              Module._set_vtx_grid_unit_size(numericValue);
+           }
+        });
+
+        const overlaySlider_view_range = document.getElementById('overlaySlider_view_range');
+        const overlayText_view_range = document.getElementById('overlayText_view_range');
+        overlaySlider_view_range.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_view_range.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_view_range) {
+              Module._set_view_range(numericValue);
+           }
+        });
+
+        const pathForm  = document.getElementById('filePathForm');
+        const pathInput = document.getElementById('filePathInput');
+
+        pathForm.addEventListener('submit', function () {
+           const pathValue = pathInput.value.trim();
+
+           if (pathValue === "") return;
+
+           const openFileEvent = new CustomEvent('openFileRequested', {
+              detail: { filePath: pathValue },
+              bubbles: true
+           });
+
+           window.dispatchEvent(openFileEvent);
+        });
+
+        // Explicitly attach the function to the global window object
+        //window.some_function = function (param) {
+        //   console.log("some_function was successfully called from C++!"+param);
+        //};
+
+        //================================
+        window.on_websocket_open = function () {
+           //===========
+           // modify below
+           console.log("on_websocket_open()");
+           //===========
+        };
+        window.on_websocket_closed = function () {
+           //===========
+           // modify below
+           console.log("on_websocket_closed()");
+           //===========
+        };
+        //================================
+
+        //================================
+        window.open_db = function (param) {
+           // Syntax: Module.ccall('func_name', 'return_type', ['argument_types'], [arguments])
+           Module.ccall(
+              'open_db',    // C++ function name
+              null,           // Return type (void is null)
+              ['string'],     // Argument types
+              [param]         // The actual JS string variable
+           );
+        };
+        //================================
+
+        // Event listener
+        window.addEventListener('openFileRequested', function (e) {
+            //================================
+            open_db(e.detail.filePath);
+            //================================
+/*
+           if (typeof Module !== 'undefined' && Module._add_char_to_string_buffer && Module._open_db) {
+              const filePath = e.detail.filePath;
+
+
+              // Convert the string into standard characters/bytes
+              const encoder      = new TextEncoder();
+              const stringBytes  = encoder.encode(filePath);
+
+              // Feed each character directly into the C++ buffer array
+              for (let i = 0; i < stringBytes.length; i++) {
+                 Module._add_char_to_string_buffer(stringBytes[i]);
+              }
+
+              // Fire the open command, passing the final length
+              Module._open_db();
+
+              //Module._open_db(e.detail.filePath);
+              //console.log("Opening short-path file:", e.detail.filePath);
+           }
+*/
+        });
+
+        const combinedForm = document.getElementById('combinedPanelForm');
+        const targetInput  = document.getElementById('targetPanelId');
+        const nextInput    = document.getElementById('nextPanelId');
+
+        combinedForm.addEventListener('submit', function () {
+           // Parse both values as integers
+           const targetId = parseInt(targetInput.value, 10);
+           const nextId = parseInt(nextInput.value, 10);
+
+           // Guard check: skip if either input is left blank or invalid
+           if (isNaN(targetId) || isNaN(nextId)) {
+              console.warn("Please enter valid integers for both fields.");
+              return;
+           }
+
+           // Create a single custom event containing both IDs in the detail object
+           const panelsSelectedEvent = new CustomEvent('panelsUpdated', {
+              detail: {
+                 targetId: targetId,
+                 nextId: nextId
+              },
+              bubbles: true
+           });
+
+           // Fire the event
+           window.dispatchEvent(panelsSelectedEvent);
+        });
+
+        // --- Listening for the combined event ---
+        window.addEventListener('panelsUpdated', function (e) {
+           if (typeof Module !== 'undefined' && Module._set_target_and_next_panel_id) {
+              Module._set_target_and_next_panel_id(e.detail.targetId, e.detail.nextId);
+           }
+        });
+        /*
+        //============
+        // Create a hidden input element
+        //============
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none'; // Keep it invisible
+
+        const originBtn = document.getElementById('overlayButton_origin');
+        originBtn.addEventListener('click', () => {
+           //console.log("Origin button clicked!");
+
+           if (typeof Module !== 'undefined' && Module._set_origin) {
+              Module._set_origin();
+           }
+
+           //============
+           // Trigger the selector when the button is clicked
+           //============
+           fileInput.click();
+        });
+
+        //============
+        // Handle the file selection
+        //============
+        fileInput.addEventListener('change', (e) => {
+           const file = e.target.files[0];
+           if (file) {
+              console.log("Selected file:", file.name);
+           }
+        });
+        */
+
+        //================================
+        // Machine
+        //================================
+        const machineGroup = document.getElementById('machine_group');
+        const btnToggleMachine = document.getElementById('btn_toggle_machine');
+
+        btnToggleMachine.addEventListener('click', () => {
+           const isHidden = machineGroup.style.display === 'none';
+
+           if (isHidden) {
+              machineGroup.style.display = 'flex';
+              btnToggleMachine.textContent = '▼ Machine';
+              btnToggleMachine.style.borderBottom = '1px solid green'; // Add line back
+           } else {
+              machineGroup.style.display = 'none';
+              btnToggleMachine.textContent = '▶ Machine';
+              btnToggleMachine.style.borderBottom = 'none'; // Hide line when closed
+           }
+        });
+
+        const overlaySlider_boom_swing = document.getElementById('overlaySlider_boom_swing');
+        const overlayText_boom_swing = document.getElementById('overlayText_boom_swing');
+        // Boom 연결
+        overlaySlider_boom_swing.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_boom_swing.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+
+           // 2. WASM 함수 호출 (함수명이 set_angle_boom 가정)
+           //Module.ccall('set_angle_boom', null, ['number'], [value]);
+           if (typeof Module !== 'undefined' && Module._JntAngBoomSwing) {
+              // C++ 등에서 _set_boom_angle로 내보낸 경우
+              Module._JntAngBoomSwing(numericValue);
+           }
+           // Example effect: adjust canvas background brightness
+           //   const brightness = value;
+           //   canvas.style.backgroundColor = `rgb(${brightness * 2.55}, ${brightness * 2.55}, ${brightness * 2.55})`;
+        });
+
+        const overlaySlider_boom = document.getElementById('overlaySlider_boom');
+        const overlayText_boom = document.getElementById('overlayText_boom');
+        // Boom 연결
+        overlaySlider_boom.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_boom.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+
+           // 2. WASM 함수 호출 (함수명이 JntAngBodyToBoom 가정)
+           //Module.ccall('JntAngBodyToBoom', null, ['number'], [value]);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyToBoom) {
+              // C++ 등에서 _set_boom_angle로 내보낸 경우
+              Module._JntAngBodyToBoom(numericValue);
+           }
+           // Example effect: adjust canvas background brightness
+           //   const brightness = value;
+           //   canvas.style.backgroundColor = `rgb(${brightness * 2.55}, ${brightness * 2.55}, ${brightness * 2.55})`;
+        });
+
+        const overlaySlider_stick = document.getElementById('overlaySlider_stick');
+        const overlayText_stick = document.getElementById('overlayText_stick');
+        overlaySlider_stick.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_stick.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngBoom2ToArm) {
+              Module._JntAngBoom2ToArm(numericValue);
+           }
+        });
+
+        const overlaySlider_bucket = document.getElementById('overlaySlider_bucket');
+        const overlayText_bucket = document.getElementById('overlayText_bucket');
+        overlaySlider_bucket.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_bucket.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngArmToBucket) {
+              Module._JntAngArmToBucket(numericValue);
+           }
+        });
+
+        const overlaySlider_tilt = document.getElementById('overlaySlider_tilt');
+        const overlayText_tilt = document.getElementById('overlayText_tilt');
+        overlaySlider_tilt.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_tilt.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngTilt) {
+              Module._JntAngTilt(numericValue);
+           }
+        });
+
+        const overlaySlider_rotate = document.getElementById('overlaySlider_rotate');
+        const overlayText_rotate = document.getElementById('overlayText_rotate');
+        overlaySlider_rotate.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_rotate.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngTrRot) {
+              Module._JntAngTrRot(numericValue);
+           }
+        });
+
+        const overlaySlider_lift = document.getElementById('overlaySlider_lift');
+        const overlayText_lift = document.getElementById('overlayText_lift');
+        overlaySlider_lift.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_lift.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JngAngDozerBlade) {
+              Module._JngAngDozerBlade(numericValue);
+           }
+        });
+
+        const overlaySlider_heading = document.getElementById('overlaySlider_heading');
+        const overlayText_heading = document.getElementById('overlayText_heading');
+        overlaySlider_heading.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_heading.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyYaw) {
+              Module._JntAngBodyYaw(numericValue);
+           }
+        });
+        const overlaySlider_pitch = document.getElementById('overlaySlider_pitch');
+        const overlayText_pitch = document.getElementById('overlayText_pitch');
+        overlaySlider_pitch.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_pitch.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyPitch) {
+              Module._JntAngBodyPitch(numericValue);
+           }
+        });
+        const overlaySlider_roll = document.getElementById('overlaySlider_roll');
+        const overlayText_roll = document.getElementById('overlayText_roll');
+        overlaySlider_roll.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_roll.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngBodyRoll) {
+              Module._JntAngBodyRoll(numericValue);
+           }
+        });
+
+        const overlaySlider_angle_lo = document.getElementById('overlaySlider_angle_lo');
+        const overlayText_angle_lo = document.getElementById('overlayText_angle_lo');
+        overlaySlider_angle_lo.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_angle_lo.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._JntAngSwing) {
+              Module._JntAngSwing(numericValue);
+           }
+        });
+
+        // 1. DOM 요소 참조
+        const editX = document.getElementById('overlayEdit_machine_x');
+        const editY = document.getElementById('overlayEdit_machine_y');
+        const editZ = document.getElementById('overlayEdit_machine_z');
+
+        /**
+         * X 값을 읽어서 Module 함수 호출
+         */
+        function updateMachX() {
+           const xVal = parseFloat(editX.value);
+           if (!isNaN(xVal)) {
+              Module._MachPosnRelEasting(xVal);
+              console.log(`Easting 호출: ${xVal}`);
+           }
+        }
+
+        /**
+         * Y 값을 읽어서 Module 함수 호출
+         */
+        function updateMachY() {
+           const yVal = parseFloat(editY.value);
+           if (!isNaN(yVal)) {
+              Module._MachPosnRelNorthing(yVal);
+              console.log(`Northing 호출: ${yVal}`);
+           }
+        }
+
+        /**
+         * Z 값을 읽어서 Module 함수 호출
+         */
+        function updateMachZ() {
+           const zVal = parseFloat(editZ.value);
+           if (!isNaN(zVal)) {
+              Module._MachPosnRelHeight(zVal);
+              console.log(`Height 호출: ${zVal}`);
+           }
+        }
+
+        // 2. 이벤트 리스너 등록
+
+        // 값이 바뀔 때마다 즉시 반영하고 싶을 때 (추천)
+        editX.addEventListener('input', updateMachX);
+        editY.addEventListener('input', updateMachY);
+        editZ.addEventListener('input', updateMachZ);
+
+        // 또는, 포커스가 나갈 때(Blur)나 엔터키를 쳤을 때만 반영하고 싶을 때
+        // editX.addEventListener('change', updateMachX);
+        // editY.addEventListener('change', updateMachY);
+
+        /*
+        const overlaySlider_machine_pos_x_offset = document.getElementById('overlaySlider_machine_pos_x_offset');
+        const overlayText_machine_pos_x_offset = document.getElementById('overlayText_machine_pos_x_offset');
+
+        const overlaySlider_machine_pos_y_offset = document.getElementById('overlaySlider_machine_pos_y_offset');
+        const overlayText_machine_pos_y_offset = document.getElementById('overlayText_machine_pos_y_offset');
+
+        // Create a reusable function to update the module
+        function updateMachinePosition() {
+           const xVal = parseFloat(overlaySlider_machine_pos_x_offset.value);
+           const yVal = parseFloat(overlaySlider_machine_pos_y_offset.value);
+
+           // Update the UI labels
+           overlayText_machine_pos_x_offset.textContent = xVal + " m";
+           overlayText_machine_pos_y_offset.textContent = yVal + " m";
+
+           // Call the WASM module with both coordinates
+           if (typeof Module !== 'undefined' && Module._MachPosnRelEasting && Module._MachPosnRelNorthing) {
+              Module._MachPosnRelEasting(xVal);
+              Module._MachPosnRelNorthing(yVal);
+           }
+        }
+
+        // Attach the same function to both listeners
+        overlaySlider_machine_pos_x_offset.addEventListener('input', updateMachinePosition);
+        overlaySlider_machine_pos_y_offset.addEventListener('input', updateMachinePosition);
+        */
+
+        const overlaySlider_target_distance = document.getElementById('overlaySlider_target_distance');
+        const overlayText_target_distance = document.getElementById('overlayText_target_distance');
+        overlaySlider_target_distance.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_target_distance.textContent = value + "m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_target_distance) {
+              Module._set_target_distance(numericValue);
+           }
+        });
+
+        const overlaySlider_target_distance_threshold = document.getElementById('overlaySlider_target_distance_threshold');
+        const overlayText_target_distance_threshold = document.getElementById('overlayText_target_distance_threshold');
+        overlaySlider_target_distance_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_target_distance_threshold.textContent = value + "m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_target_distance_threshold) {
+              Module._set_target_distance_threshold(numericValue);
+           }
+        });
+
+        //================================
+        // Features
+        //================================
+        const featuresGroup = document.getElementById('features_group');
+        const btnToggleFeatures = document.getElementById('btn_toggle_features');
+
+        btnToggleFeatures.addEventListener('click', () => {
+           const isHidden = featuresGroup.style.display === 'none';
+
+           if (isHidden) {
+              featuresGroup.style.display = 'flex';
+              btnToggleFeatures.textContent = '▼ Features';
+              btnToggleFeatures.style.borderBottom = '1px solid green'; // Add line back
+           } else {
+              featuresGroup.style.display = 'none';
+              btnToggleFeatures.textContent = '▶ Features';
+              btnToggleFeatures.style.borderBottom = 'none'; // Hide line when closed
+           }
+        });
+
+        const overlayCheckbox_tiltrotator = document.getElementById('overlayCheckbox_tiltrotator');
+        overlayCheckbox_tiltrotator.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_tiltrotator_enabled) {
+              Module._set_tiltrotator_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_grab = document.getElementById('overlayCheckbox_grab');
+        overlayCheckbox_grab.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_grab_enabled) {
+              Module._set_grab_enabled(isEnabled);
+           }
+        });
+        const overlayCheckbox_control = document.getElementById('overlayCheckbox_control');
+        overlayCheckbox_control.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Control Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_control_enabled) {
+              Module._set_control_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_auto_reset = document.getElementById('overlayCheckbox_auto_reset');
+        overlayCheckbox_auto_reset.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+           console.log("auto_reset Enabled:", isEnabled);
+           if (Module._set_auto_reset_enabled) {
+              Module._set_auto_reset_enabled(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_perspective = document.getElementById('overlayCheckbox_perspective');
+        overlayCheckbox_perspective.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_camera_perspective) {
+              Module._set_camera_perspective(isEnabled);
+           }
+        });
+
+        const overlayCheckbox_output = document.getElementById('overlayCheckbox_output');
+        overlayCheckbox_output.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           console.log("Tiltrotator Enabled:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_output_enabled) {
+              Module._set_output_enabled(isEnabled);
+           }
+        });
+
+        const overlaySlider_camera_target_z = document.getElementById('overlaySlider_camera_target_z');
+        const overlayText_camera_target_z = document.getElementById('overlayText_camera_target_z');
+        overlaySlider_camera_target_z.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_target_z.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_target_z) {
+              Module._set_camera_target_z(numericValue);
+           }
+        });
+
+        const overlaySlider_camera_fov = document.getElementById('overlaySlider_camera_fov');
+        const overlayText_camera_fov = document.getElementById('overlayText_camera_fov');
+        overlaySlider_camera_fov.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_fov.textContent = value + "°"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_fov) {
+              Module._set_camera_fov(numericValue);
+           }
+        });
+
+        const overlaySlider_camera_near_z = document.getElementById('overlaySlider_camera_near_z');
+        const overlayText_camera_near_z = document.getElementById('overlayText_camera_near_z');
+        overlaySlider_camera_near_z.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_near_z.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_near_z) {
+              Module._set_camera_near_z(numericValue);
+           }
+        });
+
+        const overlaySlider_camera_far_z = document.getElementById('overlaySlider_camera_far_z');
+        const overlayText_camera_far_z = document.getElementById('overlayText_camera_far_z');
+        overlaySlider_camera_far_z.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_camera_far_z.textContent = value + " m"; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_camera_far_z) {
+              Module._set_camera_far_z(numericValue);
+           }
+        });
+
+        const overlaySlider_view_count = document.getElementById('overlaySlider_view_count');
+        const overlayText_view_count = document.getElementById('overlayText_view_count');
+        overlaySlider_view_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_view_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_view_count) {
+              Module._set_view_count(numericValue);
+           }
+        });
+
+        const overlayslider_view_mode = document.getElementById('overlayslider_view_mode');
+        const overlayText_view_mode = document.getElementById('overlayText_view_mode');
+        overlayslider_view_mode.addEventListener('input', (event) => {
+           const value = event.target.value;
+           //overlayText_view_mode.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined') {
+              switch (numericValue) {
+                 case 0:
+                    overlayText_view_mode.textContent = "position";
+                    //_set_position_mode(true);
+                    _set_position_mode(false);
+                    break;
+                 case 1:
+                    overlayText_view_mode.textContent = "picking";
+                    _set_pick_mode();
+                    break;
+                 case 2:
+                    overlayText_view_mode.textContent = "place";
+                    _set_place_mode();
+                    break;
+              //   case 3:
+              //      overlayText_view_mode.textContent = "return";
+              //      _set_return_mode();
+              //      break;
+              }
+           }
+        });
+
+        /*
+        const overlaySlider_arrow_count = document.getElementById('overlaySlider_arrow_count');
+        const overlayText_arrow_count = document.getElementById('overlayText_arrow_count');
+        overlaySlider_arrow_count.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_arrow_count.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_arrow_count) {
+              Module._set_arrow_count(numericValue);
+           }
+        });
+
+        const overlaySlider_arrow_dir = document.getElementById('overlaySlider_arrow_dir');
+        const overlayText_arrow_dir = document.getElementById('overlayText_arrow_dir');
+        overlaySlider_arrow_dir.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_arrow_dir.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_arrow_dir) {
+              Module._set_arrow_dir(numericValue);
+           }
+        });
+        */
+
+        const overlaySlider_compass = document.getElementById('overlaySlider_compass');
+        const overlayText_compass = document.getElementById('overlayText_compass');
+        overlaySlider_compass.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_compass.textContent = value; // update text next to slider
+
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_compass) {
+              Module._set_compass(0.1, 0.0, numericValue);
+              Module._update_viewports();
+           }
+        });
+
+        //================================
+        // Shader
+        //================================
+        const shaderSettingsGroup = document.getElementById('shader_settings_group');
+        const btnToggleShaderSettings = document.getElementById('btn_toggle_shader');
+
+        btnToggleShaderSettings.addEventListener('click', () => {
+           const isHidden = shaderSettingsGroup.style.display === 'none';
+
+           if (isHidden) {
+              shaderSettingsGroup.style.display = 'flex';
+              btnToggleShaderSettings.textContent = '▼ Shader Settings';
+              btnToggleShaderSettings.style.borderBottom = '1px solid green'; // Add line back
+           } else {
+              shaderSettingsGroup.style.display = 'none';
+              btnToggleShaderSettings.textContent = '▶ Shader Settings';
+              btnToggleShaderSettings.style.borderBottom = 'none'; // Hide line when closed
+           }
+        });
+
+        const overlaySlider_norm_threshold = document.getElementById('overlaySlider_norm_threshold');
+        const overlayText_norm_threshold = document.getElementById('overlayText_norm_threshold');
+        overlaySlider_norm_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_norm_threshold.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_norm_threshold) {
+              Module._set_norm_threshold(numericValue);
+           }
+        });
+
+        const overlaySlider_z_threshold = document.getElementById('overlaySlider_z_threshold');
+        const overlayText_z_threshold = document.getElementById('overlayText_z_threshold');
+        overlaySlider_z_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_z_threshold.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_z_threshold) {
+              Module._set_z_threshold(numericValue);
+           }
+        });
+
+        const overlaySlider_z_norm_threshold = document.getElementById('overlaySlider_z_norm_threshold');
+        const overlayText_z_norm_threshold = document.getElementById('overlayText_z_norm_threshold');
+        overlaySlider_z_norm_threshold.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_z_norm_threshold.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_z_norm_threshold) {
+              Module._set_z_norm_threshold(numericValue);
+           }
+        });
+
+        const overlaySlider_z_norm_threshold_scale = document.getElementById('overlaySlider_z_norm_threshold_scale');
+        const overlayText_z_norm_threshold_scale = document.getElementById('overlayText_z_norm_threshold_scale');
+        overlaySlider_z_norm_threshold_scale.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_z_norm_threshold_scale.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_z_norm_threshold_scale) {
+              Module._set_z_norm_threshold_scale(numericValue);
+           }
+        });
+
+        const overlaySlider_outline_w = document.getElementById('overlaySlider_outline_w');
+        const overlayText_outline_w = document.getElementById('overlayText_outline_w');
+        overlaySlider_outline_w.addEventListener('input', (event) => {
+           const value = event.target.value;
+           overlayText_outline_w.textContent = value; // update text next to slider
+
+           const numericValue = parseFloat(value);
+           if (typeof Module !== 'undefined' && Module._set_outline_w) {
+              Module._set_outline_w(numericValue);
+           }
+        });
+
+        //================================
+        // Origin
+        //================================
+        /*
+        const originBtn = document.getElementById('overlayButton_origin');
+        originBtn.addEventListener('click', () => {
+           //console.log("Origin button clicked!");
+
+           if (typeof Module !== 'undefined' && Module._set_origin) {
+              Module._set_origin();
+           }
+
+           //============
+           // Trigger the selector when the button is clicked
+           //============
+           //fileInput.click();
+        });
+        */
+
+        //================================
+        // File
+        //================================
+
+
+        //================================
+        // Color
+        //================================
+        const color_Excavator = document.getElementById('idColorExcavator');
+        color_Excavator.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_excavator) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_excavator(colorInt);
+              }
+           }
+        });
+        const color_Panel = document.getElementById('idColorPanel');
+        color_Panel.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel(colorInt);
+              }
+           }
+        });
+        const color_PanelInstalled = document.getElementById('idColorPanelIntalled');
+        color_PanelInstalled.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_installed) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_installed(colorInt);
+              }
+           }
+        });
+        const color_PanelTarget = document.getElementById('idColorPanelTarget');
+        color_PanelTarget.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_target) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_target(colorInt);
+              }
+           }
+        });
+        const color_PanelNext = document.getElementById('idColorPanelNext');
+        color_PanelNext.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_next) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_next(colorInt);
+              }
+           }
+        });
+
+        const color_Pile = document.getElementById('idColorPile');
+        color_Pile.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_pile) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_pile(colorInt);
+              }
+           }
+        });
+        const color_Outline = document.getElementById('idColorOutline');
+        color_Outline.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_outline) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_outline(colorInt);
+              }
+           }
+        });
+        const color_BG = document.getElementById('idColorBG');
+        color_BG.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_bg) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_bg(colorInt);
+              }
+           }
+        });
+        const color_Arrow = document.getElementById('idColorArrow');
+        color_Arrow.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_bg) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_arrow(colorInt);
+              }
+           }
+        });
+
+        const canvas = document.getElementById('canvas');
+
+     </script>
+     <textarea id="output" rows="8"></textarea>
+
+     <script type='text/javascript'>
+        var statusElement = document.getElementById('status');
+        var progressElement = document.getElementById('progress');
+        var spinnerElement = document.getElementById('spinner');
+
+        var Module = {
+           print: (function () {
+              var element = document.getElementById('output');
+              if (element) element.value = ''; // clear browser cache
+              return function (text) {
+                 if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                 // These replacements are necessary if you render to raw HTML
+                 //text = text.replace(/&/g, "&amp;");
+                 //text = text.replace(/</g, "&lt;");
+                 //text = text.replace(/>/g, "&gt;");
+                 //text = text.replace('\n', '<br>', 'g');
+                 console.log(text);
+                 if (element) {
+                    element.value += text + "\n";
+                    element.scrollTop = element.scrollHeight; // focus on bottom
+                 }
+              };
+           })(),
+           canvas: (() => {
+              var canvas = document.getElementById('canvas');
+
+              // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+              // application robust, you may want to override this behavior before shipping!
+              // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+              canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+              //canvas.width = canvas.height * 1.6;
+              //canvas.width = canvas.height * 1.0;
+              canvas.width = window.innerWidth
+              canvas.height = canvas.width * 0.75;
+              return canvas;
+           })(),
+           setStatus: (text) => {
+              if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+              if (text === Module.setStatus.last.text) return;
+              var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+              var now = Date.now();
+              if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+              Module.setStatus.last.time = now;
+              Module.setStatus.last.text = text;
+              if (m) {
+                 text = m[1];
+                 progressElement.value = parseInt(m[2]) * 100;
+                 progressElement.max = parseInt(m[4]) * 100;
+                 progressElement.hidden = false;
+                 spinnerElement.hidden = false;
+              } else {
+                 progressElement.value = null;
+                 progressElement.max = null;
+                 progressElement.hidden = true;
+                 if (!text) spinnerElement.style.display = 'none';
+              }
+              statusElement.innerHTML = text;
+           },
+           totalDependencies: 0,
+           monitorRunDependencies: (left) => {
+              this.totalDependencies = Math.max(this.totalDependencies, left);
+              Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+           },
+
+           onRuntimeInitialized: function () {
+              console.log("WASM Runtime is fully initialized.");
+              Module._set_position_mode(false);
+           }
+        };
+        Module.setStatus('Downloading...');
+        window.onerror = (event) => {
+           // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+           Module.setStatus('Exception thrown, see JavaScript console');
+           spinnerElement.style.display = 'none';
+           Module.setStatus = (text) => {
+              if (text) console.error('[post-exception status] ' + text);
+           };
+        };
+     </script>
+
+     <!--<script>
+      // Create the AudioContext as a global variable
+      window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+   </script>-->
+     <!-- <script src="./http_server/coi-serviceworker.js"></script>-->
+     <!-- <script src="coi-serviceworker.js"></script>-->
+     <script async type="text/javascript" src="./app_wasm.js"></script>
+  </body>
+</html >
