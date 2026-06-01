@@ -7704,25 +7704,17 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var ASM_CONSTS = {
-  10023363: () => { on_websocket_open(); },  
- 10023388: () => { on_websocket_closed(); }
+  10023043: () => { on_websocket_open(); },  
+ 10023068: () => { on_websocket_closed(); }
 };
 function get_window_size(width,height) { var w = window.innerWidth; var h = window.innerHeight; setValue(width, w, 'double'); setValue(height, h, 'double'); }
 
 // Imports from the Wasm binary.
 var ___getTypeName = makeInvalidEarlyAccess('___getTypeName');
-var _set_compass = Module['_set_compass'] = makeInvalidEarlyAccess('_set_compass');
-var _update_viewports = Module['_update_viewports'] = makeInvalidEarlyAccess('_update_viewports');
-var _set_position_mode = Module['_set_position_mode'] = makeInvalidEarlyAccess('_set_position_mode');
-var _set_pick_mode = Module['_set_pick_mode'] = makeInvalidEarlyAccess('_set_pick_mode');
-var _set_place_mode = Module['_set_place_mode'] = makeInvalidEarlyAccess('_set_place_mode');
-var _set_machine_pos = Module['_set_machine_pos'] = makeInvalidEarlyAccess('_set_machine_pos');
+var _main = Module['_main'] = makeInvalidEarlyAccess('_main');
 var _MachPosnRelEasting = Module['_MachPosnRelEasting'] = makeInvalidEarlyAccess('_MachPosnRelEasting');
 var _MachPosnRelNorthing = Module['_MachPosnRelNorthing'] = makeInvalidEarlyAccess('_MachPosnRelNorthing');
 var _MachPosnRelHeight = Module['_MachPosnRelHeight'] = makeInvalidEarlyAccess('_MachPosnRelHeight');
-var _get_machine_pos_z = Module['_get_machine_pos_z'] = makeInvalidEarlyAccess('_get_machine_pos_z');
-var _set_target_distance = Module['_set_target_distance'] = makeInvalidEarlyAccess('_set_target_distance');
-var _set_target_distance_threshold = Module['_set_target_distance_threshold'] = makeInvalidEarlyAccess('_set_target_distance_threshold');
 var _JntAngBodyYaw = Module['_JntAngBodyYaw'] = makeInvalidEarlyAccess('_JntAngBodyYaw');
 var _JntAngBodyPitch = Module['_JntAngBodyPitch'] = makeInvalidEarlyAccess('_JntAngBodyPitch');
 var _JntAngBodyRoll = Module['_JntAngBodyRoll'] = makeInvalidEarlyAccess('_JntAngBodyRoll');
@@ -7735,24 +7727,22 @@ var _JntAngArmToBucket = Module['_JntAngArmToBucket'] = makeInvalidEarlyAccess('
 var _JntAngTilt = Module['_JntAngTilt'] = makeInvalidEarlyAccess('_JntAngTilt');
 var _JntAngTrRot = Module['_JntAngTrRot'] = makeInvalidEarlyAccess('_JntAngTrRot');
 var _JngAngDozerBlade = Module['_JngAngDozerBlade'] = makeInvalidEarlyAccess('_JngAngDozerBlade');
+var _set_compass = Module['_set_compass'] = makeInvalidEarlyAccess('_set_compass');
+var _set_position_mode = Module['_set_position_mode'] = makeInvalidEarlyAccess('_set_position_mode');
+var _set_pick_mode = Module['_set_pick_mode'] = makeInvalidEarlyAccess('_set_pick_mode');
+var _set_place_mode = Module['_set_place_mode'] = makeInvalidEarlyAccess('_set_place_mode');
+var _set_target_distance = Module['_set_target_distance'] = makeInvalidEarlyAccess('_set_target_distance');
+var _set_target_distance_threshold = Module['_set_target_distance_threshold'] = makeInvalidEarlyAccess('_set_target_distance_threshold');
 var _set_tiltrotator_enabled = Module['_set_tiltrotator_enabled'] = makeInvalidEarlyAccess('_set_tiltrotator_enabled');
 var _set_grab_enabled = Module['_set_grab_enabled'] = makeInvalidEarlyAccess('_set_grab_enabled');
 var _set_control_enabled = Module['_set_control_enabled'] = makeInvalidEarlyAccess('_set_control_enabled');
 var _set_auto_reset_enabled = Module['_set_auto_reset_enabled'] = makeInvalidEarlyAccess('_set_auto_reset_enabled');
 var _set_camera_perspective = Module['_set_camera_perspective'] = makeInvalidEarlyAccess('_set_camera_perspective');
 var _set_output_enabled = Module['_set_output_enabled'] = makeInvalidEarlyAccess('_set_output_enabled');
-var _set_camera_target_z = Module['_set_camera_target_z'] = makeInvalidEarlyAccess('_set_camera_target_z');
-var _set_camera_fov = Module['_set_camera_fov'] = makeInvalidEarlyAccess('_set_camera_fov');
-var _set_camera_near_z = Module['_set_camera_near_z'] = makeInvalidEarlyAccess('_set_camera_near_z');
-var _set_camera_far_z = Module['_set_camera_far_z'] = makeInvalidEarlyAccess('_set_camera_far_z');
-var _set_view_ratio = Module['_set_view_ratio'] = makeInvalidEarlyAccess('_set_view_ratio');
-var _set_view_count = Module['_set_view_count'] = makeInvalidEarlyAccess('_set_view_count');
-var _set_norm_threshold = Module['_set_norm_threshold'] = makeInvalidEarlyAccess('_set_norm_threshold');
-var _set_z_threshold = Module['_set_z_threshold'] = makeInvalidEarlyAccess('_set_z_threshold');
-var _set_z_norm_threshold = Module['_set_z_norm_threshold'] = makeInvalidEarlyAccess('_set_z_norm_threshold');
-var _set_z_norm_threshold_scale = Module['_set_z_norm_threshold_scale'] = makeInvalidEarlyAccess('_set_z_norm_threshold_scale');
-var _set_origin = Module['_set_origin'] = makeInvalidEarlyAccess('_set_origin');
-var _set_outline_w = Module['_set_outline_w'] = makeInvalidEarlyAccess('_set_outline_w');
+var _open_db = Module['_open_db'] = makeInvalidEarlyAccess('_open_db');
+var _close_db_local = Module['_close_db_local'] = makeInvalidEarlyAccess('_close_db_local');
+var _set_target_and_next_panel_id = Module['_set_target_and_next_panel_id'] = makeInvalidEarlyAccess('_set_target_and_next_panel_id');
+var _open_db_local = Module['_open_db_local'] = makeInvalidEarlyAccess('_open_db_local');
 var _set_color_excavator = Module['_set_color_excavator'] = makeInvalidEarlyAccess('_set_color_excavator');
 var _set_color_panel = Module['_set_color_panel'] = makeInvalidEarlyAccess('_set_color_panel');
 var _set_color_panel_installed = Module['_set_color_panel_installed'] = makeInvalidEarlyAccess('_set_color_panel_installed');
@@ -7762,17 +7752,24 @@ var _set_color_pile = Module['_set_color_pile'] = makeInvalidEarlyAccess('_set_c
 var _set_color_outline = Module['_set_color_outline'] = makeInvalidEarlyAccess('_set_color_outline');
 var _set_color_bg = Module['_set_color_bg'] = makeInvalidEarlyAccess('_set_color_bg');
 var _set_color_arrow = Module['_set_color_arrow'] = makeInvalidEarlyAccess('_set_color_arrow');
-var _open_db_local = Module['_open_db_local'] = makeInvalidEarlyAccess('_open_db_local');
-var _open_db = Module['_open_db'] = makeInvalidEarlyAccess('_open_db');
-var _close_db_local = Module['_close_db_local'] = makeInvalidEarlyAccess('_close_db_local');
+var _set_camera_target_z = Module['_set_camera_target_z'] = makeInvalidEarlyAccess('_set_camera_target_z');
+var _set_camera_fov = Module['_set_camera_fov'] = makeInvalidEarlyAccess('_set_camera_fov');
+var _set_camera_near_z = Module['_set_camera_near_z'] = makeInvalidEarlyAccess('_set_camera_near_z');
+var _set_camera_far_z = Module['_set_camera_far_z'] = makeInvalidEarlyAccess('_set_camera_far_z');
+var _set_view_ratio = Module['_set_view_ratio'] = makeInvalidEarlyAccess('_set_view_ratio');
+var _set_view_count = Module['_set_view_count'] = makeInvalidEarlyAccess('_set_view_count');
+var _update_viewports = Module['_update_viewports'] = makeInvalidEarlyAccess('_update_viewports');
 var _set_vtx_grid_unit_size = Module['_set_vtx_grid_unit_size'] = makeInvalidEarlyAccess('_set_vtx_grid_unit_size');
 var _set_info_grid_unit_size = Module['_set_info_grid_unit_size'] = makeInvalidEarlyAccess('_set_info_grid_unit_size');
 var _set_view_range = Module['_set_view_range'] = makeInvalidEarlyAccess('_set_view_range');
 var _set_info_radius = Module['_set_info_radius'] = makeInvalidEarlyAccess('_set_info_radius');
-var _set_target_and_next_panel_id = Module['_set_target_and_next_panel_id'] = makeInvalidEarlyAccess('_set_target_and_next_panel_id');
+var _set_norm_threshold = Module['_set_norm_threshold'] = makeInvalidEarlyAccess('_set_norm_threshold');
+var _set_z_threshold = Module['_set_z_threshold'] = makeInvalidEarlyAccess('_set_z_threshold');
+var _set_z_norm_threshold = Module['_set_z_norm_threshold'] = makeInvalidEarlyAccess('_set_z_norm_threshold');
+var _set_z_norm_threshold_scale = Module['_set_z_norm_threshold_scale'] = makeInvalidEarlyAccess('_set_z_norm_threshold_scale');
+var _set_outline_w = Module['_set_outline_w'] = makeInvalidEarlyAccess('_set_outline_w');
 var _wasm_free = Module['_wasm_free'] = makeInvalidEarlyAccess('_wasm_free');
 var _free = makeInvalidEarlyAccess('_free');
-var _main = Module['_main'] = makeInvalidEarlyAccess('_main');
 var _malloc = makeInvalidEarlyAccess('_malloc');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _emscripten_stack_get_end = makeInvalidEarlyAccess('_emscripten_stack_get_end');
@@ -7786,18 +7783,10 @@ var _emscripten_stack_get_current = makeInvalidEarlyAccess('_emscripten_stack_ge
 
 function assignWasmExports(wasmExports) {
   ___getTypeName = createExportWrapper('__getTypeName', 1);
-  Module['_set_compass'] = _set_compass = createExportWrapper('set_compass', 3);
-  Module['_update_viewports'] = _update_viewports = createExportWrapper('update_viewports', 0);
-  Module['_set_position_mode'] = _set_position_mode = createExportWrapper('set_position_mode', 1);
-  Module['_set_pick_mode'] = _set_pick_mode = createExportWrapper('set_pick_mode', 0);
-  Module['_set_place_mode'] = _set_place_mode = createExportWrapper('set_place_mode', 0);
-  Module['_set_machine_pos'] = _set_machine_pos = createExportWrapper('set_machine_pos', 3);
+  Module['_main'] = _main = createExportWrapper('main', 2);
   Module['_MachPosnRelEasting'] = _MachPosnRelEasting = createExportWrapper('MachPosnRelEasting', 1);
   Module['_MachPosnRelNorthing'] = _MachPosnRelNorthing = createExportWrapper('MachPosnRelNorthing', 1);
   Module['_MachPosnRelHeight'] = _MachPosnRelHeight = createExportWrapper('MachPosnRelHeight', 1);
-  Module['_get_machine_pos_z'] = _get_machine_pos_z = createExportWrapper('get_machine_pos_z', 0);
-  Module['_set_target_distance'] = _set_target_distance = createExportWrapper('set_target_distance', 1);
-  Module['_set_target_distance_threshold'] = _set_target_distance_threshold = createExportWrapper('set_target_distance_threshold', 1);
   Module['_JntAngBodyYaw'] = _JntAngBodyYaw = createExportWrapper('JntAngBodyYaw', 1);
   Module['_JntAngBodyPitch'] = _JntAngBodyPitch = createExportWrapper('JntAngBodyPitch', 1);
   Module['_JntAngBodyRoll'] = _JntAngBodyRoll = createExportWrapper('JntAngBodyRoll', 1);
@@ -7810,24 +7799,22 @@ function assignWasmExports(wasmExports) {
   Module['_JntAngTilt'] = _JntAngTilt = createExportWrapper('JntAngTilt', 1);
   Module['_JntAngTrRot'] = _JntAngTrRot = createExportWrapper('JntAngTrRot', 1);
   Module['_JngAngDozerBlade'] = _JngAngDozerBlade = createExportWrapper('JngAngDozerBlade', 1);
+  Module['_set_compass'] = _set_compass = createExportWrapper('set_compass', 3);
+  Module['_set_position_mode'] = _set_position_mode = createExportWrapper('set_position_mode', 1);
+  Module['_set_pick_mode'] = _set_pick_mode = createExportWrapper('set_pick_mode', 0);
+  Module['_set_place_mode'] = _set_place_mode = createExportWrapper('set_place_mode', 0);
+  Module['_set_target_distance'] = _set_target_distance = createExportWrapper('set_target_distance', 1);
+  Module['_set_target_distance_threshold'] = _set_target_distance_threshold = createExportWrapper('set_target_distance_threshold', 1);
   Module['_set_tiltrotator_enabled'] = _set_tiltrotator_enabled = createExportWrapper('set_tiltrotator_enabled', 1);
   Module['_set_grab_enabled'] = _set_grab_enabled = createExportWrapper('set_grab_enabled', 1);
   Module['_set_control_enabled'] = _set_control_enabled = createExportWrapper('set_control_enabled', 1);
   Module['_set_auto_reset_enabled'] = _set_auto_reset_enabled = createExportWrapper('set_auto_reset_enabled', 1);
   Module['_set_camera_perspective'] = _set_camera_perspective = createExportWrapper('set_camera_perspective', 1);
   Module['_set_output_enabled'] = _set_output_enabled = createExportWrapper('set_output_enabled', 1);
-  Module['_set_camera_target_z'] = _set_camera_target_z = createExportWrapper('set_camera_target_z', 1);
-  Module['_set_camera_fov'] = _set_camera_fov = createExportWrapper('set_camera_fov', 1);
-  Module['_set_camera_near_z'] = _set_camera_near_z = createExportWrapper('set_camera_near_z', 1);
-  Module['_set_camera_far_z'] = _set_camera_far_z = createExportWrapper('set_camera_far_z', 1);
-  Module['_set_view_ratio'] = _set_view_ratio = createExportWrapper('set_view_ratio', 1);
-  Module['_set_view_count'] = _set_view_count = createExportWrapper('set_view_count', 1);
-  Module['_set_norm_threshold'] = _set_norm_threshold = createExportWrapper('set_norm_threshold', 1);
-  Module['_set_z_threshold'] = _set_z_threshold = createExportWrapper('set_z_threshold', 1);
-  Module['_set_z_norm_threshold'] = _set_z_norm_threshold = createExportWrapper('set_z_norm_threshold', 1);
-  Module['_set_z_norm_threshold_scale'] = _set_z_norm_threshold_scale = createExportWrapper('set_z_norm_threshold_scale', 1);
-  Module['_set_origin'] = _set_origin = createExportWrapper('set_origin', 0);
-  Module['_set_outline_w'] = _set_outline_w = createExportWrapper('set_outline_w', 1);
+  Module['_open_db'] = _open_db = createExportWrapper('open_db', 1);
+  Module['_close_db_local'] = _close_db_local = createExportWrapper('close_db_local', 0);
+  Module['_set_target_and_next_panel_id'] = _set_target_and_next_panel_id = createExportWrapper('set_target_and_next_panel_id', 2);
+  Module['_open_db_local'] = _open_db_local = createExportWrapper('open_db_local', 1);
   Module['_set_color_excavator'] = _set_color_excavator = createExportWrapper('set_color_excavator', 1);
   Module['_set_color_panel'] = _set_color_panel = createExportWrapper('set_color_panel', 1);
   Module['_set_color_panel_installed'] = _set_color_panel_installed = createExportWrapper('set_color_panel_installed', 1);
@@ -7837,17 +7824,24 @@ function assignWasmExports(wasmExports) {
   Module['_set_color_outline'] = _set_color_outline = createExportWrapper('set_color_outline', 1);
   Module['_set_color_bg'] = _set_color_bg = createExportWrapper('set_color_bg', 1);
   Module['_set_color_arrow'] = _set_color_arrow = createExportWrapper('set_color_arrow', 1);
-  Module['_open_db_local'] = _open_db_local = createExportWrapper('open_db_local', 1);
-  Module['_open_db'] = _open_db = createExportWrapper('open_db', 1);
-  Module['_close_db_local'] = _close_db_local = createExportWrapper('close_db_local', 0);
+  Module['_set_camera_target_z'] = _set_camera_target_z = createExportWrapper('set_camera_target_z', 1);
+  Module['_set_camera_fov'] = _set_camera_fov = createExportWrapper('set_camera_fov', 1);
+  Module['_set_camera_near_z'] = _set_camera_near_z = createExportWrapper('set_camera_near_z', 1);
+  Module['_set_camera_far_z'] = _set_camera_far_z = createExportWrapper('set_camera_far_z', 1);
+  Module['_set_view_ratio'] = _set_view_ratio = createExportWrapper('set_view_ratio', 1);
+  Module['_set_view_count'] = _set_view_count = createExportWrapper('set_view_count', 1);
+  Module['_update_viewports'] = _update_viewports = createExportWrapper('update_viewports', 0);
   Module['_set_vtx_grid_unit_size'] = _set_vtx_grid_unit_size = createExportWrapper('set_vtx_grid_unit_size', 1);
   Module['_set_info_grid_unit_size'] = _set_info_grid_unit_size = createExportWrapper('set_info_grid_unit_size', 1);
   Module['_set_view_range'] = _set_view_range = createExportWrapper('set_view_range', 1);
   Module['_set_info_radius'] = _set_info_radius = createExportWrapper('set_info_radius', 1);
-  Module['_set_target_and_next_panel_id'] = _set_target_and_next_panel_id = createExportWrapper('set_target_and_next_panel_id', 2);
+  Module['_set_norm_threshold'] = _set_norm_threshold = createExportWrapper('set_norm_threshold', 1);
+  Module['_set_z_threshold'] = _set_z_threshold = createExportWrapper('set_z_threshold', 1);
+  Module['_set_z_norm_threshold'] = _set_z_norm_threshold = createExportWrapper('set_z_norm_threshold', 1);
+  Module['_set_z_norm_threshold_scale'] = _set_z_norm_threshold_scale = createExportWrapper('set_z_norm_threshold_scale', 1);
+  Module['_set_outline_w'] = _set_outline_w = createExportWrapper('set_outline_w', 1);
   Module['_wasm_free'] = _wasm_free = createExportWrapper('wasm_free', 1);
   _free = createExportWrapper('free', 1);
-  Module['_main'] = _main = createExportWrapper('main', 2);
   _malloc = createExportWrapper('malloc', 1);
   _fflush = createExportWrapper('fflush', 1);
   _emscripten_stack_get_end = wasmExports['emscripten_stack_get_end'];
