@@ -8260,8 +8260,8 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('onSbrkGrow');
 }
 var ASM_CONSTS = {
-  10019363: () => { on_websocket_open(); },  
- 10019388: () => { on_websocket_closed(); }
+  10019395: () => { on_websocket_open(); },  
+ 10019420: () => { on_websocket_closed(); }
 };
 function get_window_size(width,height) { var w = window.innerWidth; var h = window.innerHeight; setValue(width, w, 'double'); setValue(height, h, 'double'); }
 
