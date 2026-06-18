@@ -1746,10 +1746,10 @@ div.emscripten_border { border: 1px solid black; }
                     overlayText_view_mode.textContent = "place";
                     _set_place_mode();
                     break;
-              //   case 3:
-              //      overlayText_view_mode.textContent = "return";
-              //      _set_return_mode();
-              //      break;
+                 case 3:
+                    overlayText_view_mode.textContent = "stanby";
+                    _set_return_mode();
+                    break;
               }
            }
         });
@@ -2214,6 +2214,7 @@ div.emscripten_border { border: 1px solid black; }
            onRuntimeInitialized: function () {
               console.log("WASM Runtime is fully initialized.");
               Module._set_position_mode(false);
+              //Module._set_standby_mode();
            }
         };
         Module.setStatus('Downloading...');
