@@ -1053,27 +1053,6 @@ div.emscripten_border { border: 1px solid black; }
             //================================
             open_db(e.detail.filePath);
             //================================
-/*
-           if (typeof Module !== 'undefined' && Module._add_char_to_string_buffer && Module._open_db) {
-              const filePath = e.detail.filePath;
-
-
-              // Convert the string into standard characters/bytes
-              const encoder      = new TextEncoder();
-              const stringBytes  = encoder.encode(filePath);
-
-              // Feed each character directly into the C++ buffer array
-              for (let i = 0; i < stringBytes.length; i++) {
-                 Module._add_char_to_string_buffer(stringBytes[i]);
-              }
-
-              // Fire the open command, passing the final length
-              Module._open_db();
-
-              //Module._open_db(e.detail.filePath);
-              //console.log("Opening short-path file:", e.detail.filePath);
-           }
-*/
         });
 
         const combinedForm = document.getElementById('combinedPanelForm');
