@@ -371,14 +371,20 @@ div.emscripten_border { border: 1px solid black; }
                  </div>
                  <div id="slider_arrow_line_step" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Line Step</span>
-                    <input type="range" id="overlaySlider_arrow_line_step" min="0.01" max="0.5" step="0.01" value="0.2" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_arrow_line_step" style="min-width: 30px;">0.2 m</span>
+                    <input type="range" id="overlaySlider_arrow_line_step" min="0.01" max="0.5" step="0.01" value="0.3" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_arrow_line_step" style="min-width: 30px;">0.3 m</span>
                  </div>
                  <div id="slider_arrow_line_width" style="display: flex; align-items: center; gap: 10px; color: green; font-weight: bold; white-space: nowrap;">
                     <span style="min-width: 90px;">Line Width</span>
-                    <input type="range" id="overlaySlider_arrow_line_width" min="0.01" max="0.5" step="0.01" value="0.1" style="width: 150px; cursor: pointer;">
-                    <span id="overlayText_arrow_line_width" style="min-width: 30px;">0.1 m</span>
+                    <input type="range" id="overlaySlider_arrow_line_width" min="0.1" max="0.5" step="0.01" value="0.15" style="width: 150px; cursor: pointer;">
+                    <span id="overlayText_arrow_line_width" style="min-width: 30px;">0.15 m</span>
                  </div>
+
+                 <label>
+                    <input type="checkbox" id="overlayCheckbox_antialiasing" checked>
+                    Anti-aliasing
+                 </label>
+
               </div>
            </div>
 
@@ -733,16 +739,16 @@ div.emscripten_border { border: 1px solid black; }
            <input type="color" id="idColorPanelOutlineGrabbed" value="#000000">
 
            <div style="color: blue; font-weight: bold; padding: 0px 0; font-size: 12px;">
-              --- Error Arrow Ouline---
+              --- Error Arrow---
            </div>
            <div style="color: blue; font-weight: bold; padding: 0px 0; font-size: 12px;">
            </div>
 
-           <label for="idColorErrorArrowOutlinePos" style="text-align: left;">Pos</label>
-           <input type="color" id="idColorErrorArrowOutlinePos" value="#0000ff">
+           <label for="idColorErrorArrowSolid" style="text-align: left;">Solid</label>
+           <input type="color" id="idColorErrorArrowSolid" value="#0000ff">
 
-           <label for="idColorErrorArrowOutlineRot" style="text-align: left;">Rot</label>
-           <input type="color" id="idColorErrorArrowOutlineRot" value="#0000ff">
+           <label for="idColorErrorArrowOutline" style="text-align: left;">Outline</label>
+           <input type="color" id="idColorErrorArrowOutline" value="#ffffff">
 
            <div style="color: blue; font-weight: bold; padding: 0px 0; font-size: 12px;">
               --- Boundary---
@@ -1270,6 +1276,21 @@ div.emscripten_border { border: 1px solid black; }
            overlaySlider_arrow_line_step.addEventListener('input', update_err_panel_target);
            overlaySlider_arrow_line_width.addEventListener('input', update_err_panel_target);
         }
+
+        const overlayCheckbox_antialiasing = document.getElementById('overlayCheckbox_antialiasing');
+        overlayCheckbox_antialiasing.addEventListener('change', (e) => {
+           // 1. 체크 상태 확인 (true/false)
+           const isEnabled = e.target.checked;
+
+           // 확인을 위한 로그
+           //console.log("Anti-aliasing:", isEnabled);
+
+           // 2. Wasm 함수 호출
+           // JS의 true/false는 C++의 bool(1/0)로 자동 변환됩니다.
+           if (Module._set_antialiasing_enabled) {
+              Module._set_antialiasing_enabled(isEnabled);
+           }
+        });
 
         //================================
         // Machine
@@ -2021,25 +2042,25 @@ div.emscripten_border { border: 1px solid black; }
         //============
         // Error Arrow Ouline
         //============
-        const color_ErrorArrowOutlinePos = document.getElementById('idColorErrorArrowOutlinePos');
+        const color_ErrorArrowOutlinePos = document.getElementById('idColorErrorArrowOutline');
         color_ErrorArrowOutlinePos.addEventListener('input', (event) => {
            const target = event.target;
            if (target.type === 'color') {
-              if (typeof Module !== 'undefined' && Module._set_color_error_arrow_pos_outline) {
+              if (typeof Module !== 'undefined' && Module._set_color_error_arrow_outline) {
                  const colorHex = target.value;
                  const colorInt = parseInt(colorHex.replace("#", ""), 16);
-                 Module._set_color_error_arrow_pos_outline(colorInt);
+                 Module._set_color_error_arrow_outline(colorInt);
               }
            }
         });
-        const color_ErrorArrowOutlineRot = document.getElementById('idColorErrorArrowOutlineRot');
+        const color_ErrorArrowOutlineRot = document.getElementById('idColorErrorArrowSolid');
         color_ErrorArrowOutlineRot.addEventListener('input', (event) => {
            const target = event.target;
            if (target.type === 'color') {
-              if (typeof Module !== 'undefined' && Module._set_color_error_arrow_rot_outline) {
+              if (typeof Module !== 'undefined' && Module._set_color_error_arrow_solid) {
                  const colorHex = target.value;
                  const colorInt = parseInt(colorHex.replace("#", ""), 16);
-                 Module._set_color_error_arrow_rot_outline(colorInt);
+                 Module._set_color_error_arrow_solid(colorInt);
               }
            }
         });
