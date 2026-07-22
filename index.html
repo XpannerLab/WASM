@@ -730,7 +730,7 @@ div.emscripten_border { border: 1px solid black; }
            <input type="color" id="idColorPanelGrabbed" value="#A7C9FE">
 
            <div style="color: blue; font-weight: bold; padding: 0px 0; font-size: 12px;">
-              --- Panel Ouline---
+              --- Panel Outline---
            </div>
            <div style="color: blue; font-weight: bold; padding: 0px 0; font-size: 12px;">
            </div>
@@ -2045,16 +2045,16 @@ div.emscripten_border { border: 1px solid black; }
         color_PanelOutlineGrabbed.addEventListener('input', (event) => {
            const target = event.target;
            if (target.type === 'color') {
-              if (typeof Module !== 'undefined' && Module._set_color_panel_ouline_grabbed) {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_outline_grabbed) {
                  const colorHex = target.value;
                  const colorInt = parseInt(colorHex.replace("#", ""), 16);
-                 Module._set_color_panel_ouline_grabbed(colorInt);
+                 Module._set_color_panel_outline_grabbed(colorInt);
               }
            }
         });
 
         //============
-        // Error Arrow Ouline
+        // Error Arrow Outline
         //============
         const color_ErrorArrowOutlinePos = document.getElementById('idColorErrorArrowOutline');
         color_ErrorArrowOutlinePos.addEventListener('input', (event) => {
