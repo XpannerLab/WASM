@@ -717,6 +717,9 @@ div.emscripten_border { border: 1px solid black; }
            <label for="idColorPanelIntalled" style="text-align: left;">Installed</label>
            <input type="color" id="idColorPanelIntalled" value="#66E2A0">
 
+           <label for="idColorPanelDamaged" style="text-align: left;">Damaged</label>
+           <input type="color" id="idColorPanelDamaged" value="#ff0000">
+
            <label for="idColorPanelTarget" style="text-align: left;">Target</label>
            <input type="color" id="idColorPanelTarget" value="#0F62FE">
 
@@ -1975,6 +1978,17 @@ div.emscripten_border { border: 1px solid black; }
                  const colorHex = target.value;
                  const colorInt = parseInt(colorHex.replace("#", ""), 16);
                  Module._set_color_panel_installed(colorInt);
+              }
+           }
+        });
+        const color_PanelDamaged = document.getElementById('idColorPanelDamaged');
+        color_PanelDamaged.addEventListener('input', (event) => {
+           const target = event.target;
+           if (target.type === 'color') {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_damaged) {
+                 const colorHex = target.value;
+                 const colorInt = parseInt(colorHex.replace("#", ""), 16);
+                 Module._set_color_panel_damaged(colorInt);
               }
            }
         });
