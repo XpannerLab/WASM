@@ -2033,10 +2033,10 @@ div.emscripten_border { border: 1px solid black; }
         color_PanelOutlineNearby.addEventListener('input', (event) => {
            const target = event.target;
            if (target.type === 'color') {
-              if (typeof Module !== 'undefined' && Module._set_color_panel_ouline_nearby) {
+              if (typeof Module !== 'undefined' && Module._set_color_panel_outline_nearby) {
                  const colorHex = target.value;
                  const colorInt = parseInt(colorHex.replace("#", ""), 16);
-                 Module._set_color_panel_ouline_nearby(colorInt);
+                 Module._set_color_panel_outline_nearby(colorInt);
               }
            }
         });
