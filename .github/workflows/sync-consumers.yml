@@ -202,6 +202,9 @@ jobs:
           commit-message: 'chore(wasm): sync artifacts from ${{ needs.snapshot.outputs.sha }}'
           title: 'chore(wasm): WASM 산출물 갱신 — ${{ needs.snapshot.outputs.version }}'
           body-path: pr-body.md
+          reviewers: |
+            haley-xpanner
+            xpanner-Lia
 
       - name: Close superseded artifact PRs
         if: steps.pr.outputs.pull-request-number != '' || steps.existing.outputs.reason == 'already-open' || steps.existing.outputs.reason == 'already-merged'
