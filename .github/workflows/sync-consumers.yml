@@ -12,26 +12,39 @@ on:
 permissions:
   contents: read
 
-# One writer per consumer branch. Re-runs also resolve the latest main snapshot.
+# Re-runs keep the original event SHA; do not resolve the latest main.
 concurrency:
   group: wasm-consumer-sync
   cancel-in-progress: false
+  queue: max
 
 jobs:
   snapshot:
     if: github.repository == 'XpannerLab/WASM' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       sha: ${{ steps.source.outputs.sha }}
+      version: ${{ steps.source.outputs.version }}
+      release_url: ${{ steps.source.outputs.url }}
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Resolve latest source snapshot
+      - name: Publish or resume artifact release
         id: source
-        shell: bash
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { publish } = require('./.github/scripts/publish-release.cjs');
+            const result = await publish({github, ...context.repo, sourceSha: context.sha});
+            for (const key of ['sha', 'version', 'url', 'reused', 'bundle']) core.setOutput(key, result[key]);
+            await core.summary.addHeading(result.version)
+              .addRaw(`Event SHA: ${context.sha}\n\nCanonical source: ${result.sha}\n\n`)
+              .addLink('Release', result.url)
+              .addRaw(`\n\nReused existing bundle: ${result.reused}\n`).write();
 
   sync:
     needs: snapshot
@@ -47,17 +60,27 @@ jobs:
             add_paths: |
               public/wasm/app_wasm.js
               public/wasm/app_wasm.wasm
+              wasm-version.json
           - repository: xpanner-x1-excavator-desktop
             base: develop
             directory: electron/resources/wasm-proxy
             files: app_proxy_win.exe
-            add_paths: electron/resources/wasm-proxy/app_proxy_win.exe
+            add_paths: |
+              electron/resources/wasm-proxy/app_proxy_win.exe
+              wasm-version.json
     steps:
+      - name: Checkout workflow tools
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: automation
+          persist-credentials: false
       - name: Checkout source snapshot
         uses: actions/checkout@v6
         with:
           ref: ${{ needs.snapshot.outputs.sha }}
           path: source
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Create consumer repository token
@@ -80,14 +103,36 @@ jobs:
           path: consumer
           persist-credentials: false
 
+      # A source-specific branch prevents a delayed/old run from replacing
+      # the files of a newer source PR. Preserve closed/merged PR decisions.
+      - name: Check existing source PR
+        id: existing
+        uses: actions/github-script@v8
+        env:
+          TARGET_REPOSITORY: ${{ matrix.repository }}
+          TARGET_BASE: ${{ matrix.base }}
+          SOURCE_SHA: ${{ needs.snapshot.outputs.sha }}
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { inspect } = require('./automation/.github/scripts/consumer-pr.cjs');
+            const result = await inspect({github, owner:'XpannerDev',
+              repo:process.env.TARGET_REPOSITORY, base:process.env.TARGET_BASE,
+              sha:process.env.SOURCE_SHA});
+            for (const [key,value] of Object.entries(result)) core.setOutput(key,value);
+
       - name: Validate and copy artifacts
+        if: steps.existing.outputs.skip != 'true'
         shell: python
         env:
           ARTIFACT_FILES: ${{ matrix.files }}
           TARGET_DIRECTORY: ${{ matrix.directory }}
           SOURCE_SHA: ${{ needs.snapshot.outputs.sha }}
+          RELEASE_VERSION: ${{ needs.snapshot.outputs.version }}
+          RELEASE_URL: ${{ needs.snapshot.outputs.release_url }}
         run: |
           import hashlib
+          import json
           import os
           from pathlib import Path
           import shutil
@@ -109,12 +154,27 @@ jobs:
 
           destination = Path('consumer') / os.environ['TARGET_DIRECTORY']
           destination.mkdir(parents=True, exist_ok=True)
+          metadata = {
+              'schemaVersion': 1,
+              'version': os.environ['RELEASE_VERSION'],
+              'sourceRepository': 'XpannerLab/WASM',
+              'sourceCommit': os.environ['SOURCE_SHA'],
+              'releaseTag': os.environ['RELEASE_VERSION'],
+              'releaseUrl': os.environ['RELEASE_URL'],
+              'files': {},
+          }
           lines = [
-              'WASM 산출물을 최신 main 스냅샷으로 갱신합니다.',
+              '## What is this issue? 🔍',
+              'WASM 산출물 자동 반영',
+              '',
+              '## Changes 📝',
+              f"WASM 산출물을 {os.environ['RELEASE_VERSION']} 발행본으로 갱신합니다.",
+              f"Release: {os.environ['RELEASE_URL']}",
               '',
               f"Source: https://github.com/XpannerLab/WASM/commit/{os.environ['SOURCE_SHA']}",
               f"Workflow: {os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
               '',
+              '## Description 📋',
               '| File | SHA-256 |',
               '| --- | --- |',
           ]
@@ -122,23 +182,45 @@ jobs:
               target = destination / name
               shutil.copyfile(source / name, target)
               digest = hashlib.sha256(target.read_bytes()).hexdigest()
+              metadata['files'][target.relative_to(Path('consumer')).as_posix()] = {'sha256': digest, 'size': target.stat().st_size}
               lines.append(f'| `{target.relative_to(Path("consumer")).as_posix()}` | `{digest}` |')
-          lines += ['', 'FE와 desktop의 연관 PR에서 Source 커밋이 같은지 확인한 뒤 함께 검증해 주세요.',
-                    '이 PR은 파일만 갱신하며, 머지 및 배포는 기존 저장소 절차를 따릅니다.']
+          Path('consumer/wasm-version.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          lines += ['', f"<!-- wasm-consumer-source:{os.environ['SOURCE_SHA']} -->", 'FE와 desktop의 연관 PR에서 Source 커밋이 같은지 확인한 뒤 함께 검증해 주세요.',
+                    '이 PR은 산출물과 버전 기록을 갱신하며, 머지 및 배포는 기존 저장소 절차를 따릅니다.']
           Path('pr-body.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
       - name: Create or update consumer PR
+        if: steps.existing.outputs.skip != 'true'
         id: pr
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app-token.outputs.token }}
           path: consumer
           base: ${{ matrix.base }}
-          branch: codex/sync-wasm-artifacts
+          branch: ${{ steps.existing.outputs.branch }}
           add-paths: ${{ matrix.add_paths }}
           commit-message: 'chore(wasm): sync artifacts from ${{ needs.snapshot.outputs.sha }}'
-          title: 'chore(wasm): update WASM artifacts'
+          title: 'chore(wasm): WASM 산출물 갱신 — ${{ needs.snapshot.outputs.version }}'
           body-path: pr-body.md
+
+      - name: Close superseded artifact PRs
+        if: steps.pr.outputs.pull-request-number != '' || steps.existing.outputs.reason == 'already-open' || steps.existing.outputs.reason == 'already-merged'
+        uses: actions/github-script@v8
+        env:
+          TARGET_REPOSITORY: ${{ matrix.repository }}
+          TARGET_BASE: ${{ matrix.base }}
+          SOURCE_SHA: ${{ needs.snapshot.outputs.sha }}
+          CURRENT_PR: ${{ steps.pr.outputs.pull-request-number || steps.existing.outputs.number }}
+          ALLOWED_PATHS: ${{ matrix.add_paths }}
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { cleanup } = require('./automation/.github/scripts/consumer-pr.cjs');
+            const closed = await cleanup({github,owner:'XpannerDev',
+              repo:process.env.TARGET_REPOSITORY,base:process.env.TARGET_BASE,
+              sha:process.env.SOURCE_SHA,currentNumber:process.env.CURRENT_PR,
+              allowedPaths:process.env.ALLOWED_PATHS.trim().split(/\s+/)});
+            if (closed.length) await core.summary.addRaw(`Superseded PRs closed: ${closed.join(', ')}\n`).write();
 
       - name: Record result
         shell: bash
@@ -146,10 +228,15 @@ jobs:
           REPOSITORY: XpannerDev/${{ matrix.repository }}
           PR_URL: ${{ steps.pr.outputs.pull-request-url }}
           OPERATION: ${{ steps.pr.outputs.pull-request-operation }}
+          SKIPPED: ${{ steps.existing.outputs.skip }}
+          EXISTING_PR_URL: ${{ steps.existing.outputs.url }}
+          SKIP_REASON: ${{ steps.existing.outputs.reason }}
           SOURCE_SHA: ${{ needs.snapshot.outputs.sha }}
         run: |
           printf '### %s\n\nSource: `%s`\n\n' "$REPOSITORY" "$SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"
-          if [ -n "$PR_URL" ]; then
+          if [ "$SKIPPED" = "true" ]; then
+            printf 'Skipped (%s): %s\n' "$SKIP_REASON" "$EXISTING_PR_URL" >> "$GITHUB_STEP_SUMMARY"
+          elif [ -n "$PR_URL" ]; then
             printf 'PR: %s (%s)\n' "$PR_URL" "$OPERATION" >> "$GITHUB_STEP_SUMMARY"
           else
             printf 'No artifact changes; no PR needed.\n' >> "$GITHUB_STEP_SUMMARY"
