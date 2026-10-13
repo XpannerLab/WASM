@@ -53,7 +53,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - repository: xpanner-connect-excavator-fe
+          - repository: xpanner-connect-panellift-fe
             base: develop
             directory: public/wasm
             files: app_wasm.js app_wasm.wasm
@@ -61,7 +61,7 @@ jobs:
               public/wasm/app_wasm.js
               public/wasm/app_wasm.wasm
               wasm-version.json
-          - repository: xpanner-x1-excavator-desktop
+          - repository: xpanner-x1-panellift-desktop
             base: develop
             directory: electron/resources/wasm-proxy
             files: app_proxy_win.exe

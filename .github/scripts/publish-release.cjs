@@ -32,11 +32,14 @@ function nextVersion(now, names) {
   const seq = names.filter(n => n.startsWith(prefix) && /^\d+$/.test(n.slice(prefix.length))).map(n => Number(n.slice(prefix.length)));
   return prefix + (Math.max(0, ...seq) + 1);
 }
-function report(m) {
+function report(m, {legacyConsumerNames = false} = {}) {
   const lines = [`# ${m.version}`, '', `Source: https://github.com/${m.sourceRepository}/commit/${m.sourceCommit}`, `Bundle SHA-256: \`${m.bundleId}\``, `Previous release: ${m.previousVersion || 'initial baseline'}`, '', '| File | Change | Bytes | SHA-256 |','| --- | --- | --- | --- |'];
   for (const n of FILES) lines.push(`| ${n} | ${m.changes[n]} | ${m.files[n].size} | ${m.files[n].sha256} |`);
   lines.push('', 'File/header validation: passed. Runtime/interface tests: not run.', '기능 변경 설명: 제공되지 않음. Release 발행은 제품 배포·호환성 검증 완료를 의미하지 않습니다.', '', 'Consumer PRs (live state):');
-  for (const repo of ['xpanner-connect-excavator-fe','xpanner-x1-excavator-desktop']) lines.push(`- [${repo}](https://github.com/XpannerDev/${repo}/pulls?q=${encodeURIComponent(`is:pr head:codex/sync-wasm-${m.sourceCommit}`)})`);
+  const consumers = legacyConsumerNames
+    ? ['xpanner-connect-excavator-fe','xpanner-x1-excavator-desktop']
+    : ['xpanner-connect-panellift-fe','xpanner-x1-panellift-desktop'];
+  for (const repo of consumers) lines.push(`- [${repo}](https://github.com/XpannerDev/${repo}/pulls?q=${encodeURIComponent(`is:pr head:codex/sync-wasm-${m.sourceCommit}`)})`);
   return lines.join('\n') + '\n';
 }
 async function publish({github, owner, repo, sourceSha, root = '.', now = new Date()}) {
@@ -84,7 +87,12 @@ async function publish({github, owner, repo, sourceSha, root = '.', now = new Da
     }
     // Download and compare even on retries; never overwrite published bytes.
     const downloaded = await github.rest.repos.getReleaseAsset({owner,repo,asset_id:asset.id,headers:{accept:'application/octet-stream'}});
-    if (hash(Buffer.from(downloaded.data)) !== hash(data)) throw Error(`Release asset mismatch: ${name}`);
+    const downloadedHash = hash(Buffer.from(downloaded.data));
+    // Previously published reports are immutable. Accept only the exact old
+    // rendering for this manifest, not arbitrary report changes.
+    const legacyReportMatches = name === 'change-report.md' &&
+      downloadedHash === hash(Buffer.from(report(m, {legacyConsumerNames:true})));
+    if (downloadedHash !== hash(data) && !legacyReportMatches) throw Error(`Release asset mismatch: ${name}`);
   }
   if (r.draft) r = (await github.rest.repos.updateRelease({owner,repo,release_id:r.id,draft:false,make_latest:'false'})).data;
   return {sha:m.sourceCommit,version:m.version,url:r.html_url,reused:String(reused),bundle:m.bundleId,manifest:m};

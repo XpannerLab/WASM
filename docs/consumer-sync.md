@@ -6,8 +6,8 @@
 
 | 파일 | 대상 저장소 (XpannerDev) | 경로 | PR base |
 | --- | --- | --- | --- |
-| app_wasm.js / app_wasm.wasm | xpanner-connect-excavator-fe | public/wasm/ | develop |
-| app_proxy_win.exe | xpanner-x1-excavator-desktop | electron/resources/wasm-proxy/ | develop |
+| app_wasm.js / app_wasm.wasm | xpanner-connect-panellift-fe | public/wasm/ | develop |
+| app_proxy_win.exe | xpanner-x1-panellift-desktop | electron/resources/wasm-proxy/ | develop |
 
 원본은 XpannerLab/WASM 루트이며 render_batch/, render_instanced/는 제외합니다. 개별 파일 변경도 새 묶음 후보이며 나머지 파일은 같은 커밋의 기존 파일을 포함합니다.
 
@@ -38,6 +38,8 @@ Release 초안의 본문에 기계가 읽는 manifest를 함께 저장합니다.
 - change-report.md: 파일별 변경·동일 여부와 검사 범위
 
 첨부한 파일을 다시 다운로드하여 내용 해시를 확인한 뒤 draft를 발행합니다. 이미 발행한 asset이나 태그는 덮어쓰지 않습니다. 지연된 과거 실행이 최신 표시를 덮지 않도록 `make_latest: false`로 발행하며, GitHub의 Latest 표시를 배포 기준으로 사용하지 않습니다.
+
+저장소 이름 변경 전 발행한 `change-report.md`는 이전 이름으로 생성한 보고서와 정확히 일치하는 경우에도 재사용합니다. 기존 보고서는 덮어쓰지 않고, 새 보고서의 소비 저장소 링크에는 `panellift` 이름을 사용합니다.
 
 파일 헤더 검사는 수행하지만 JS/WASM 런타임·함수·프록시 호환성 검사는 아직 없습니다. 보고서에는 미실행 및 기능 변경 설명 미제공을 명시합니다. 비교 기준은 직전에 발행 예약된 완료 버전이며, 원본 커밋의 직전 버전과 다를 수 있습니다.
 

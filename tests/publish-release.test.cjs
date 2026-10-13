@@ -35,6 +35,23 @@ test('same SHA retry and same content different SHA reuse version and canonical 
  const {state,run}=setup(t);const a=await run();await run();const b=await run('b'.repeat(40));
  assert.equal(b.version,a.version);assert.equal(b.sha,a.sha);assert.equal(state.releases.length,1);assert.equal(state.calls.filter(x=>x==='upload').length,5);
 });
+test('renamed consumer links preserve old release assets on reuse and draft resume',async t=>{
+ for (const draft of [false,true]) {
+  const {state,run}=setup(t);const first=await run();
+  const asset=state.assets.find(a=>a.name==='change-report.md');
+  assert.match(asset.data.toString(),/XpannerDev\/xpanner-connect-panellift-fe\/pulls/);
+  assert.match(asset.data.toString(),/XpannerDev\/xpanner-x1-panellift-desktop\/pulls/);
+  // Reproduce bytes emitted before the repository rename independently.
+  const legacy=Buffer.from(asset.data.toString().replaceAll('xpanner-connect-panellift-fe','xpanner-connect-excavator-fe').replaceAll('xpanner-x1-panellift-desktop','xpanner-x1-excavator-desktop'));
+  asset.data=legacy;state.releases[0].draft=draft;
+  const reused=await run('b'.repeat(40));
+  assert.equal(reused.version,first.version);assert.equal(reused.sha,first.sha);
+  assert.deepEqual(asset.data,legacy);assert.equal(state.calls.filter(x=>x==='upload').length,5);
+  assert.equal(state.releases[0].draft,false);
+  asset.data=Buffer.concat([legacy,Buffer.from('tampered')]);
+  await assert.rejects(run(),/Release asset mismatch: change-report.md/);
+ }
+});
 test('single EXE change creates next version and reports other files unchanged',async t=>{
  const {root,run}=setup(t);await run();fs.writeFileSync(path.join(root,'app_proxy_win.exe'),'MZnew');const r=await run('b'.repeat(40));
  assert.equal(r.version,'wasm-2026.09.18.2');assert.equal(r.manifest.changes['app_proxy_win.exe'],'changed');assert.equal(r.manifest.changes['app_wasm.js'],'unchanged');assert.equal(r.manifest.previousVersion,'wasm-2026.09.18.1');
